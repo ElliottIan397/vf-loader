@@ -69,9 +69,11 @@ window.vfExtensions.push({
                     throw new Error("No sessionToken returned");
                 }
 
-                // SUCCESS PATH ONLY
-                window.voiceflow.chat.setVariables({
-                    sessionToken: data.sessionToken
+                window.voiceflow.chat.interact({
+                    type: "complete",
+                    payload: {
+                        sessionToken: data.sessionToken
+                    }
                 });
 
                 window.voiceflow.chat.interact({ type: "complete" });
