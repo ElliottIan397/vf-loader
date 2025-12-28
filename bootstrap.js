@@ -54,17 +54,28 @@ window.vfExtensions.push({
                     body: JSON.stringify({ email, password }),
                 });
 
-                const data = await res.json();
-                if (!res.ok || !data.sessionToken) throw new Error();
+                if (!res.ok) {
+                    throw new Error("HTTP error");
+                }
 
-                // ONLY NOW VF CONTINUES
+                let data;
+                try {
+                    data = await res.json();
+                } catch {
+                    throw new Error("Invalid JSON response");
+                }
+
+                if (!data.sessionToken) {
+                    throw new Error("No sessionToken returned");
+                }
+
+                // SUCCESS PATH ONLY
                 window.voiceflow.chat.setVariables({
                     sessionToken: data.sessionToken
                 });
 
-                window.voiceflow.chat.interact({
-                    type: "complete"
-                });
+                window.voiceflow.chat.interact({ type: "complete" });
+
 
             } catch {
                 err.textContent = "Invalid email or password";
