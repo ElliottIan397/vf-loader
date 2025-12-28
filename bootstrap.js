@@ -7,8 +7,7 @@ console.log("🚀 VF BOOTSTRAP START");
 // -------------------------------
 // 1. Register extensions FIRST
 // -------------------------------
-window.vfExtensions = window.vfExtensions || [];
-
+window.vfExtensions = [];
 
 // --- Login form extension ---
 window.vfExtensions.push({
@@ -33,20 +32,20 @@ window.vfExtensions.push({
         </form>
       </div>
     `;
-
     element.appendChild(container);
   }
 });
 
 // --- Existing OPEN_SCHEDULER effect ---
 window.vfExtensions.push({
-    name: "OPEN_SCHEDULER",
-    type: "effect",
-    match: ({ trace }) => trace?.type === "custom" && trace?.payload?.name === "OPEN_SCHEDULER",
-    effect: ({ trace }) => {
-        const email = trace?.payload?.payload?.email || "";
-        window.parent.postMessage({ type: "OPEN_SCHEDULER", email }, "*");
-    }
+  name: "OPEN_SCHEDULER",
+  type: "effect",
+  match: ({ trace }) =>
+    trace?.type === "custom" && trace?.payload?.name === "OPEN_SCHEDULER",
+  effect: ({ trace }) => {
+    const email = trace?.payload?.payload?.email || "";
+    window.parent.postMessage({ type: "OPEN_SCHEDULER", email }, "*");
+  }
 });
 
 console.log("✅ VF EXTENSIONS REGISTERED", window.vfExtensions);
@@ -55,36 +54,33 @@ console.log("✅ VF EXTENSIONS REGISTERED", window.vfExtensions);
 // 2. Load Voiceflow widget
 // -------------------------------
 (function loadVoiceflow() {
-    const s = document.createElement("script");
-    s.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs";
-    s.type = "text/javascript";
+  const s = document.createElement("script");
+  s.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs";
+  s.type = "text/javascript";
 
-    s.onload = function () {
-        console.log("📦 VF WIDGET LOADED");
+  s.onload = function () {
+    console.log("📦 VF WIDGET LOADED");
 
-        window.voiceflow.chat.load({
-            verify: { projectID: "68f13d16ad1237134f502fee" },
-            url: "https://general-runtime.voiceflow.com",
-            versionID: "production",
+    window.voiceflow.chat.load({
+      verify: { projectID: "68f13d16ad1237134f502fee" },
+      url: "https://general-runtime.voiceflow.com",
+      versionID: "production",
 
+      render: {
+        mode: "embedded",
+        target: document.getElementById("voiceflow-chat-frame")
+      },
 
-            render: {
-                mode: "embedded",
-                target: document.getElementById("voiceflow-chat-frame")
-            },
+      autostart: true,
+      assistant: {
+        persistence: "localStorage",
+        stylesheet: "https://digitolblob.azureedge.net/clientsite/css/skins/blue.css",
+        extensions: window.vfExtensions   // ✅ CORRECT LOCATION
+      }
+    });
 
+    console.log("🎉 VF CHAT INITIALIZED");
+  };
 
-            autostart: true,
-            assistant: {
-                persistence: "localStorage",
-                stylesheet: "https://digitolblob.azureedge.net/clientsite/css/skins/blue.css"
-            },
-
-            extensions: window.vfExtensions
-        });
-
-        console.log("🎉 VF CHAT INITIALIZED");
-    };
-
-    document.head.appendChild(s);
+  document.head.appendChild(s);
 })();
