@@ -28,7 +28,7 @@ window.vfExtensions.push({
         <form id="vfLoginForm">
           <input type="email" placeholder="Email" required style="width:100%;padding:8px;margin-bottom:8px" />
           <input type="password" placeholder="Password" required style="width:100%;padding:8px;margin-bottom:8px" />
-          <button type="submit" style="width:100%;padding:10px">Log in</button>
+          <button type="button" style="width:100%;padding:10px">Log in</button>
         </form>
       </div>
     `;
