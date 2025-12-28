@@ -23,15 +23,32 @@ window.vfExtensions.push({
         const container = document.createElement("div");
 
         container.innerHTML = `
-    <div style="font-family:system-ui,sans-serif;padding:8px">
-      <form id="vfLoginForm">
-        <input id="vfEmail" type="email" placeholder="Email" required />
-        <input id="vfPassword" type="password" placeholder="Password" required />
-        <button type="submit">Log in</button>
-        <div id="vfErr" style="color:#b00020;margin-top:6px"></div>
-      </form>
-    </div>
-  `;
+  <div style="font-family:system-ui,sans-serif;padding:8px">
+    <form id="vfLoginForm">
+      <input
+        id="vfEmail"
+        type="email"
+        placeholder="Email"
+        required
+        style="width:100%;padding:8px;margin-bottom:8px;box-sizing:border-box"
+      />
+      <input
+        id="vfPassword"
+        type="password"
+        placeholder="Password"
+        required
+        style="width:100%;padding:8px;margin-bottom:8px;box-sizing:border-box"
+      />
+      <button
+        type="submit"
+        style="width:100%;padding:10px;cursor:pointer"
+      >
+        Log in
+      </button>
+      <div id="vfErr" style="color:#b00020;margin-top:6px"></div>
+    </form>
+  </div>
+`;
 
         element.appendChild(container);
 
