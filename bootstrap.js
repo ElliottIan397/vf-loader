@@ -58,9 +58,12 @@ window.vfExtensions.push({
                 if (!res.ok || !data.sessionToken) throw new Error();
 
                 // ONLY NOW VF CONTINUES
+                window.voiceflow.chat.setVariables({
+                    sessionToken: data.sessionToken
+                });
+
                 window.voiceflow.chat.interact({
-                    type: "complete",
-                    payload: { sessionToken: data.sessionToken }
+                    type: "complete"
                 });
 
             } catch {
