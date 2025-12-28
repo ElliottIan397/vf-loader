@@ -9,22 +9,8 @@ console.log("🚀 VF BOOTSTRAP START");
 // -------------------------------
 window.vfExtensions = window.vfExtensions || [];
 
-// --- temp debugger
-
-window.vfExtensions.push({
-    name: "__TRACE_DEBUG__",
-    type: "response",
-
-    match: ({ trace }) => {
-        console.log("🔥 RESPONSE TRACE:", trace);
-        return false;
-    },
-
-    render: () => { }
-});
 
 // --- Login form extension ---
-/*
 window.vfExtensions.push({
   name: "login_form",
   type: "response",
@@ -51,7 +37,6 @@ window.vfExtensions.push({
     element.appendChild(container);
   }
 });
-*/
 
 // --- Existing OPEN_SCHEDULER effect ---
 window.vfExtensions.push({
@@ -82,14 +67,11 @@ console.log("✅ VF EXTENSIONS REGISTERED", window.vfExtensions);
             url: "https://general-runtime.voiceflow.com",
             versionID: "production",
 
-            /*      
-                  render: {
-                    mode: "embedded",
-                    target: document.getElementById("voiceflow-chat-frame")
-                  },
-            */
 
-            render: { mode: "overlay" },
+            render: {
+                mode: "embedded",
+                target: document.getElementById("voiceflow-chat-frame")
+            },
 
 
             autostart: true,
