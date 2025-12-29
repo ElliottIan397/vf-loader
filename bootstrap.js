@@ -86,15 +86,23 @@ window.vfExtensions.push({
                     throw new Error("No sessionToken returned");
                 }
 
-                window.voiceflow.chat.interact({
-                    type: "complete",
-                    payload: {
-                        sessionToken: data.sessionToken
-                    }
-                });
+                // Replace form with success message
+                container.innerHTML = `
+                  <div style="font-family:system-ui,sans-serif;padding:8px;text-align:center">
+                    <div style="font-size:16px;font-weight:600;color:#2e7d32">
+                      ✓ Logged in successfully
+                    </div>
+                  </div>
+                `;
 
-                window.voiceflow.chat.interact({ type: "complete" });
-
+                setTimeout(() => {
+                    window.voiceflow.chat.interact({
+                        type: "complete",
+                        payload: {
+                            sessionToken: data.sessionToken
+                        }
+                    });
+                }, 400);
 
             } catch {
                 err.textContent = "Invalid email or password";
