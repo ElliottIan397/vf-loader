@@ -105,6 +105,40 @@ window.vfExtensions.push({
   },
 });
 
+window.vfExtensions.push({
+  name: "LOGOUT",
+  type: "effect",
+
+  match: ({ trace }) =>
+    trace?.type === "custom" &&
+    trace?.payload?.name === "LOGOUT",
+
+  effect: async ({ trace }) => {
+    const sessionToken = trace?.payload?.payload?.sessionToken;
+    if (!sessionToken) return;
+
+    try {
+      await fetch("https://vf-nc-gateway.onrender.com/vf/logout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionToken })
+      });
+    } catch (_) {
+      // intentionally ignore — logout must be best-effort
+    }
+
+    // 🔴 Required: clear VF persistence
+    localStorage.removeItem("voiceflow-webchat-conversation");
+    localStorage.removeItem("voiceflow-webchat-session");
+
+    // 🔄 Reset chat cleanly
+    if (window.voiceflow?.chat) {
+      window.voiceflow.chat.close();
+      window.voiceflow.chat.open();
+    }
+  }
+});
+
 /* ---------- OPEN SCHEDULER EFFECT ---------- */
 window.vfExtensions.push({
   name: "OPEN_SCHEDULER",
