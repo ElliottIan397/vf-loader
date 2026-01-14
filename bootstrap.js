@@ -196,6 +196,43 @@ console.log("✅ VF EXTENSIONS REGISTERED", window.vfExtensions);
       }
     });
 
+    function applyFullWidthIfHome() {
+      if (!isHomePage) return;
+
+      const vfHost = document.getElementById("voiceflow-chat-frame");
+      const shadowRoot = vfHost?.shadowRoot;
+      if (!shadowRoot) return;
+
+      if (shadowRoot.querySelector("#vf-fullwidth-override")) return;
+
+      const style = document.createElement("style");
+      style.id = "vf-fullwidth-override";
+      style.textContent = `
+    .vfrc-chat {
+      width: 100% !important;
+      max-width: 100% !important;
+    }
+  `;
+
+      shadowRoot.appendChild(style);
+    }
+
+    if (isHomePage) {
+      // Attempt immediately (covers fast-load case)
+      applyFullWidthIfHome();
+
+      // Fallback observer (covers async / delayed mount)
+      const observer = new MutationObserver(() => {
+        const vfHost = document.getElementById("voiceflow-chat-frame");
+        if (vfHost?.shadowRoot) {
+          applyFullWidthIfHome();
+          observer.disconnect();
+        }
+      });
+
+      observer.observe(document.body, { childList: true, subtree: true });
+    }
+
     /* ---------- ?q= PRE-SEED SUPPORT ---------- */
     (function autoSendQuery() {
       const params = new URLSearchParams(location.search);
