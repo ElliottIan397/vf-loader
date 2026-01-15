@@ -115,16 +115,17 @@ window.vfExtensions.push({
 
   effect: async ({ trace }) => {
     const sessionToken = trace?.payload?.payload?.sessionToken;
-    if (!sessionToken) return;
 
-    try {
-      await fetch("https://vf-nc-gateway.onrender.com/vf/logout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sessionToken })
-      });
-    } catch (_) {
-      // intentionally ignore — logout must be best-effort
+    if (sessionToken) {
+      try {
+        await fetch("https://vf-nc-gateway.onrender.com/vf/logout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sessionToken })
+        });
+      } catch (_) {
+        // best-effort only
+      }
     }
 
     // 🔴 Required: clear VF persistence
@@ -152,6 +153,60 @@ window.vfExtensions.push({
 });
 
 console.log("✅ VF EXTENSIONS REGISTERED", window.vfExtensions);
+
+(function interceptSessionExpiry() {
+  const originalFetch = window.fetch;
+
+  window.fetch = async (...args) => {
+    const response = await originalFetch(...args);
+
+    const url = typeof args[0] === "string" ? args[0] : args[0]?.url;
+    if (!url || !url.includes("/vf/")) return response;
+
+    if (response.status === 401) {
+      triggerSessionExpired();
+      return response;
+    }
+
+    try {
+      const ct = response.headers.get("content-type") || "";
+      if (ct.includes("application/json")) {
+        const clone = response.clone();
+        const data = await clone.json();
+        if (data?.reason === "SESSION_EXPIRED") {
+          triggerSessionExpired();
+        }
+      }
+    } catch (_) { }
+
+    return response;
+  };
+
+  function triggerSessionExpired() {
+    if (window.__vfSessionExpired) return;
+    window.__vfSessionExpired = true;
+
+    console.warn("⚠️ VF session expired");
+
+    // 1️⃣ Tell the user (last message before reset)
+    window.voiceflow?.chat?.interact({
+      type: "text",
+      payload:
+        "⚠️ Your session has expired. Please log in again to continue."
+    });
+
+    // 2️⃣ Trigger the SAME logout effect used everywhere else
+    setTimeout(() => {
+      window.voiceflow?.chat?.interact({
+        type: "custom",
+        payload: {
+          name: "LOGOUT",
+          payload: {}
+        }
+      });
+    }, 300);
+  }
+})();
 
 // -----------------------------------------------------
 // 3. Load Voiceflow widget (ONCE)
