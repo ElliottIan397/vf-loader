@@ -231,6 +231,33 @@ function forceLogoutOnNewChat() {
   }
 })();
 
+// --------------------------------------------------------------
+// 2a. orce Logout and variable reset in existing browser session
+// --------------------------------------------------------------
+function interceptStartNewChat() {
+  document.addEventListener("click", (e) => {
+    const btn = e.target.closest("button");
+    if (!btn) return;
+
+    if (
+      btn.id === "vfrc-start-chat" ||
+      btn.innerText?.toLowerCase().includes("start new chat")
+    ) {
+      console.warn("🔁 Start new chat clicked — forcing hard reset");
+
+      // Hard reset VF state
+      localStorage.removeItem("voiceflow-webchat-conversation");
+      localStorage.removeItem("voiceflow-webchat-session");
+
+      // Reuse existing logout mechanics
+      window.voiceflow?.chat?.interact({
+        type: "custom",
+        payload: { name: "LOGOUT", payload: {} }
+      });
+    }
+  });
+}
+
 // -----------------------------------------------------
 // 3. Load Voiceflow widget (ONCE)
 // -----------------------------------------------------
@@ -264,6 +291,9 @@ function forceLogoutOnNewChat() {
 
     window.voiceflow.chat.load(loadConfig).then(() => {
       console.log("🎉 VF CHAT INITIALIZED");
+
+      // ✅ CALL IT HERE (single line)
+      interceptStartNewChat();
 
       const hasConversation = localStorage.getItem(
         "voiceflow-webchat-conversation"
