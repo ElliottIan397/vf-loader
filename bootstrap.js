@@ -154,6 +154,29 @@ window.vfExtensions.push({
 
 console.log("✅ VF EXTENSIONS REGISTERED", window.vfExtensions);
 
+function forceLogoutOnNewChat() {
+  if (!window.voiceflow?.chat) return;
+
+  const originalOpen = window.voiceflow.chat.open;
+
+  window.voiceflow.chat.open = function (...args) {
+    // If a previous session existed, force logout
+    if (localStorage.getItem("voiceflow-webchat-session")) {
+      console.warn("🔁 New chat started — forcing logout");
+
+      window.voiceflow.chat.interact({
+        type: "custom",
+        payload: {
+          name: "LOGOUT",
+          payload: {}
+        }
+      });
+    }
+
+    return originalOpen.apply(this, args);
+  };
+}
+
 (function interceptSessionExpiry() {
   const originalFetch = window.fetch;
 
