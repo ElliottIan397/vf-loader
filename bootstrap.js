@@ -271,21 +271,33 @@ function injectVFModalCSS() {
 }
 
 function activateVFModal() {
-  console.warn("🧪 activateVFModal CALLED");
   injectVFModalCSS();
+
+  const scrollY = window.scrollY;
+  document.body.dataset.vfScrollY = scrollY;
+
+  document.body.style.top = `-${scrollY}px`;
+  document.body.classList.add("vf-modal-open");
 
   if (!document.querySelector(".vf-backdrop")) {
     const backdrop = document.createElement("div");
     backdrop.className = "vf-backdrop";
     document.body.appendChild(backdrop);
   }
-
-  document.body.classList.add("vf-modal-open");
 }
 
 function deactivateVFModal() {
+  const scrollY = document.body.dataset.vfScrollY;
+
   document.body.classList.remove("vf-modal-open");
+  document.body.style.top = "";
   document.querySelector(".vf-backdrop")?.remove();
+
+  if (scrollY) {
+    window.scrollTo(0, parseInt(scrollY, 10));
+    delete document.body.dataset.vfScrollY;
+  }
+
   window.__vfModalActivated = false;
 }
 
