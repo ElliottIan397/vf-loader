@@ -13,7 +13,7 @@ window.__vfModalActivated = false;
 // -----------------------------------------------------
 const VF_HOME_TARGET_ID = "voiceflow-chat-frame";
 const isHomePage = !!document.getElementById(VF_HOME_TARGET_ID);
-
+console.log("🧪 isHomePage =", isHomePage);
 console.log("📍 VF PAGE MODE:", isHomePage ? "HOME (embedded)" : "NOT HOME (floating)");
 
 // -----------------------------------------------------
@@ -361,16 +361,25 @@ function interceptStartNewChat() {
 
     // Fist Interaction Freeze Background    
     function armFirstInteractionFreeze() {
-      if (!isHomePage) return;
+      console.log("🧪 armFirstInteractionFreeze CALLED");
+
+      if (!isHomePage) {
+        console.warn("🧪 Not home page — abort arming");
+        return;
+      }
 
       const originalInteract = window.voiceflow.chat.interact;
+      console.log("🧪 interact wrapped");
 
       window.voiceflow.chat.interact = function (payload) {
+        console.log("🧪 interact payload:", payload);
+
         if (
           !window.__vfModalActivated &&
           payload &&
           payload.type !== "launch"
         ) {
+          console.warn("🧪 FREEZE TRIGGERED");
           window.__vfModalActivated = true;
           activateVFModal();
         }
