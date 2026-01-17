@@ -266,6 +266,7 @@ function injectVFModalCSS() {
 }
 
 function activateVFModal() {
+  console.warn("🧪 activateVFModal CALLED");
   injectVFModalCSS();
 
   if (!document.querySelector(".vf-backdrop")) {
