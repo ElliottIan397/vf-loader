@@ -362,31 +362,31 @@ function interceptStartNewChat() {
 
     // Fist Interaction Freeze Background    
     function armFirstInteractionFreeze() {
-      console.log("🧪 armFirstInteractionFreeze CALLED");
+      if (!isHomePage) return;
 
-      if (!isHomePage) {
-        console.warn("🧪 Not home page — abort arming");
+      const vfHost = document.getElementById("voiceflow-chat-frame");
+      if (!vfHost) {
+        console.warn("🧪 VF host not found — cannot arm freeze");
         return;
       }
 
-      const originalInteract = window.voiceflow.chat.interact;
-      console.log("🧪 interact wrapped");
+      console.log("🧪 arming DOM-based first interaction listener");
 
-      window.voiceflow.chat.interact = function (payload) {
-        console.log("🧪 interact payload:", payload);
+      const handler = () => {
+        if (window.__vfModalActivated) return;
 
-        if (
-          !window.__vfModalActivated &&
-          payload &&
-          payload.type !== "launch"
-        ) {
-          console.warn("🧪 FREEZE TRIGGERED");
-          window.__vfModalActivated = true;
-          activateVFModal();
-        }
+        console.warn("🧪 DOM INTERACTION → FREEZE");
+        window.__vfModalActivated = true;
+        activateVFModal();
 
-        return originalInteract.apply(this, arguments);
+        vfHost.removeEventListener("focusin", handler, true);
+        vfHost.removeEventListener("keydown", handler, true);
+        vfHost.removeEventListener("pointerdown", handler, true);
       };
+
+      vfHost.addEventListener("focusin", handler, true);
+      vfHost.addEventListener("keydown", handler, true);
+      vfHost.addEventListener("pointerdown", handler, true);
     }
 
     function applyFullWidthIfHome() {
