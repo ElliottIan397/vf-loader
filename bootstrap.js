@@ -5,6 +5,9 @@
 
 console.log("🚀 VF BOOTSTRAP START");
 
+// Global State Flag
+window.__vfModalActivated = false;
+
 // -----------------------------------------------------
 // 1. Detect page mode
 // -----------------------------------------------------
@@ -114,6 +117,7 @@ window.vfExtensions.push({
     trace?.payload?.name === "LOGOUT",
 
   effect: async ({ trace }) => {
+    deactivateVFModal(); // ✅ ADD THIS LINE (FIRST)
     const sessionToken = trace?.payload?.payload?.sessionToken;
 
     if (sessionToken) {
@@ -232,6 +236,53 @@ console.log("✅ VF EXTENSIONS REGISTERED", window.vfExtensions);
   }
 })();
 
+// Modal CSS +helper for freeze and blur
+function injectVFModalCSS() {
+  if (document.getElementById("vf-modal-css")) return;
+
+  const style = document.createElement("style");
+  style.id = "vf-modal-css";
+  style.textContent = `
+    body.vf-modal-open {
+      overflow: hidden !important;
+      position: fixed;
+      width: 100%;
+    }
+
+    .vf-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.35);
+      backdrop-filter: blur(6px);
+      z-index: 9998;
+    }
+
+    #voiceflow-chat-frame {
+      position: relative;
+      z-index: 9999;
+    }
+  `;
+  document.head.appendChild(style);
+}
+
+function activateVFModal() {
+  injectVFModalCSS();
+
+  if (!document.querySelector(".vf-backdrop")) {
+    const backdrop = document.createElement("div");
+    backdrop.className = "vf-backdrop";
+    document.body.appendChild(backdrop);
+  }
+
+  document.body.classList.add("vf-modal-open");
+}
+
+function deactivateVFModal() {
+  document.body.classList.remove("vf-modal-open");
+  document.querySelector(".vf-backdrop")?.remove();
+  window.__vfModalActivated = false;
+}
+
 // --------------------------------------------------------------
 // 2a. Force Logout and variable reset in existing browser session
 // --------------------------------------------------------------
@@ -245,6 +296,8 @@ function interceptStartNewChat() {
       btn.innerText?.toLowerCase().includes("start new chat")
     ) {
       console.warn("🔁 Start new chat clicked — forcing hard reset");
+
+      deactivateVFModal(); // ✅ ADD THIS LINE
 
       // Hard reset VF state
       // localStorage.removeItem("voiceflow-webchat-conversation");
@@ -295,6 +348,7 @@ function interceptStartNewChat() {
 
       // ✅ CALL IT HERE (single line)
       interceptStartNewChat();
+      armFirstInteractionFreeze();   // ← ADD
 
       const hasConversation = localStorage.getItem(
         "voiceflow-webchat-conversation"
@@ -304,6 +358,25 @@ function interceptStartNewChat() {
         window.voiceflow.chat.open();
       }
     });
+
+    // Fist Interaction Freeze Background    
+    function armFirstInteractionFreeze() {
+      if (!isHomePage) return;
+
+      const originalInteract = window.voiceflow.chat.interact;
+
+      window.voiceflow.chat.interact = function (payload) {
+        if (
+          !window.__vfModalActivated &&
+          payload?.type === "text"
+        ) {
+          window.__vfModalActivated = true;
+          activateVFModal();
+        }
+
+        return originalInteract.apply(this, arguments);
+      };
+    }
 
     function applyFullWidthIfHome() {
       if (!isHomePage) return;
