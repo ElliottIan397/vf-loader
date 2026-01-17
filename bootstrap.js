@@ -238,7 +238,12 @@ console.log("✅ VF EXTENSIONS REGISTERED", window.vfExtensions);
 
 // Modal CSS +helper for freeze and blur
 function injectVFModalCSS() {
-  if (document.getElementById("vf-modal-css")) return;
+  console.warn("🧪 injectVFModalCSS CALLED");
+
+  if (document.getElementById("vf-modal-css")) {
+    console.warn("🧪 vf-modal-css already exists");
+    return;
+  }
 
   const style = document.createElement("style");
   style.id = "vf-modal-css";
