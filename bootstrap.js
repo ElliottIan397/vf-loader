@@ -347,8 +347,8 @@ function interceptStartNewChat() {
       console.log("🎉 VF CHAT INITIALIZED");
 
       // ✅ CALL IT HERE (single line)
-      interceptStartNewChat();
       armFirstInteractionFreeze();   // ← ADD
+      interceptStartNewChat();
 
       const hasConversation = localStorage.getItem(
         "voiceflow-webchat-conversation"
@@ -368,7 +368,8 @@ function interceptStartNewChat() {
       window.voiceflow.chat.interact = function (payload) {
         if (
           !window.__vfModalActivated &&
-          payload?.type === "text"
+          payload &&
+          payload.type !== "launch"
         ) {
           window.__vfModalActivated = true;
           activateVFModal();
