@@ -5,12 +5,24 @@
 
 console.log("🚀 VF BOOTSTRAP START");
 
+// 🔴 HARD RESET MODAL STATE ON LOAD
+if (document.body) {
+  document.body.classList.remove("vf-modal-open");
+  document.body.style.top = "";
+  document.querySelector(".vf-backdrop")?.remove();
+  delete document.body.dataset.vfScrollY;
+}
+
+// Global State Flag (define ONCE)
+window.__vfModalActivated = false;
+
 // -----------------------------------------------------
 // 1. Detect page mode
 // -----------------------------------------------------
 const VF_HOME_TARGET_ID = "voiceflow-chat-frame";
 const isHomePage = !!document.getElementById(VF_HOME_TARGET_ID);
 
+console.log("🧪 isHomePage =", isHomePage);
 console.log("📍 VF PAGE MODE:", isHomePage ? "HOME (embedded)" : "NOT HOME (floating)");
 
 // -----------------------------------------------------
@@ -114,6 +126,7 @@ window.vfExtensions.push({
     trace?.payload?.name === "LOGOUT",
 
   effect: async ({ trace }) => {
+    deactivateVFModal(); // ✅ ADD THIS LINE (FIRST)
     const sessionToken = trace?.payload?.payload?.sessionToken;
 
     if (sessionToken) {
@@ -139,6 +152,7 @@ window.vfExtensions.push({
     }
   }
 });
+
 
 /* ---------- OPEN SCHEDULER EFFECT ---------- */
 window.vfExtensions.push({
@@ -232,6 +246,87 @@ console.log("✅ VF EXTENSIONS REGISTERED", window.vfExtensions);
   }
 })();
 
+// Modal CSS +helper for freeze and blur
+function injectVFModalCSS() {
+  console.warn("🧪 injectVFModalCSS CALLED");
+
+  if (document.getElementById("vf-modal-css")) {
+    console.warn("🧪 vf-modal-css already exists");
+    return;
+  }
+
+  const style = document.createElement("style");
+  style.id = "vf-modal-css";
+  style.textContent = `
+    body.vf-modal-open {
+      overflow: hidden !important;
+      position: fixed;
+      width: 100%;
+    }
+
+    .vf-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.35);
+      backdrop-filter: blur(6px);
+      z-index: 9998;
+    }
+
+    #voiceflow-chat-frame {
+      position: relative;
+      z-index: 9999;
+    }
+  `;
+  document.head.appendChild(style);
+}
+
+function activateVFModal() {
+  // ✅ Ensure widget is visible BEFORE freezing
+  if (isHomePage && window.voiceflow?.chat) {
+    window.voiceflow.chat.open();
+  }
+  
+  injectVFModalCSS();
+
+  const scrollY = window.scrollY;
+  document.body.dataset.vfScrollY = scrollY;
+
+  document.body.style.top = `-${scrollY}px`;
+  document.body.classList.add("vf-modal-open");
+
+  if (!document.querySelector(".vf-backdrop")) {
+    const backdrop = document.createElement("div");
+    backdrop.className = "vf-backdrop";
+
+    backdrop.addEventListener("click", () => {
+      console.warn("🧪 Backdrop clicked → unfreeze");
+      deactivateVFModal();
+    });
+
+    document.body.appendChild(backdrop);
+  }
+}
+
+function deactivateVFModal() {
+  const scrollY = document.body.dataset.vfScrollY;
+
+  document.body.classList.remove("vf-modal-open");
+  document.body.style.top = "";
+  document.querySelector(".vf-backdrop")?.remove();
+
+  if (scrollY) {
+    window.scrollTo(0, parseInt(scrollY, 10));
+    delete document.body.dataset.vfScrollY;
+  }
+
+  window.__vfModalActivated = false;
+
+  // 🔴 RE-ARM FOR NEXT ENTRY
+  setTimeout(() => {
+    armWhenVFReady();
+  }, 0);
+}
+
 // --------------------------------------------------------------
 // 2a. Force Logout and variable reset in existing browser session
 // --------------------------------------------------------------
@@ -246,6 +341,8 @@ function interceptStartNewChat() {
     ) {
       console.warn("🔁 Start new chat clicked — forcing hard reset");
 
+      deactivateVFModal(); // ✅ ADD THIS LINE
+
       // Hard reset VF state
       // localStorage.removeItem("voiceflow-webchat-conversation");
       // localStorage.removeItem("voiceflow-webchat-session");
@@ -257,6 +354,63 @@ function interceptStartNewChat() {
       });
     }
   });
+}
+
+// First Interaction Freeze Background    
+function armFirstInteractionFreeze() {
+  if (!isHomePage) return;
+
+  const vfHost = document.getElementById("voiceflow-chat-frame");
+  if (!vfHost) {
+    console.warn("🧪 VF host not found — cannot arm freeze");
+    return;
+  }
+
+  console.log("🧪 arming DOM-based first interaction listener");
+
+  const handler = (e) => {
+    // Already frozen → ignore
+    if (window.__vfModalActivated) return;
+
+    // Ignore non-human / system-triggered events
+    if (!e.isTrusted) return;
+
+    // 🔒 ONLY trigger if event originated inside VF shadow DOM
+    const path = e.composedPath?.() || [];
+    const originatedInsideVF = path.some(
+      el => el?.id === "voiceflow-chat-frame"
+    );
+
+    if (!originatedInsideVF) return;
+
+    if (e.type === "pointerdown" || e.type === "keydown") {
+      window.__vfModalActivated = true;
+      activateVFModal();
+    }
+  };
+
+  vfHost.addEventListener("keydown", handler, true);
+  vfHost.addEventListener("pointerdown", handler, true);
+}
+
+function armWhenVFReady() {
+  if (!isHomePage) return;
+
+  console.log("🧪 armWhenVFReady: waiting for VF DOM");
+
+  const observer = new MutationObserver(() => {
+    const vfHost = document.getElementById("voiceflow-chat-frame");
+
+    if (!vfHost) return;
+
+    // Embedded widget DOM is now real
+    console.log("🧪 VF DOM ready — arming first interaction freeze");
+
+    observer.disconnect();
+    armFirstInteractionFreeze();
+  });
+
+  observer.observe(document.body, { childList: true, subtree: true });
 }
 
 // -----------------------------------------------------
@@ -274,7 +428,7 @@ function interceptStartNewChat() {
       verify: { projectID: "68f13d16ad1237134f502fee" },
       url: "https://general-runtime.voiceflow.com",
       versionID: "production",
-      autostart: true,
+      autostart: !isHomePage,
       assistant: {
         persistence: "localStorage",
         stylesheet:
@@ -294,15 +448,8 @@ function interceptStartNewChat() {
       console.log("🎉 VF CHAT INITIALIZED");
 
       // ✅ CALL IT HERE (single line)
+      armWhenVFReady();          // ✅ NEW
       interceptStartNewChat();
-
-      const hasConversation = localStorage.getItem(
-        "voiceflow-webchat-conversation"
-      );
-
-      if (hasConversation) {
-        window.voiceflow.chat.open();
-      }
     });
 
     function applyFullWidthIfHome() {
