@@ -376,3 +376,10 @@ function interceptStartNewChat() {
 
   document.head.appendChild(script);
 })();
+
+/* =====================================================
+   ✅ FORCE TOP OF PAGE — REQUIRED FOR EMBEDDED VF
+   ===================================================== */
+window.onload = function () {
+  window.scrollTo(0, 0);
+};
