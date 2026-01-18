@@ -13,11 +13,8 @@ if (document.body) {
   delete document.body.dataset.vfScrollY;
 }
 
-// 🔴 FORCE TOP ON INITIAL LOAD ONLY
-if (!sessionStorage.getItem("vf-initial-load")) {
-  sessionStorage.setItem("vf-initial-load", "1");
-  window.scrollTo(0, 0);
-}
+// 🔴 FORCE TOP OF PAGE ON LOAD
+window.scrollTo(0, 0);
 
 // Global State Flag (define ONCE)
 window.__vfModalActivated = false;
@@ -159,15 +156,6 @@ window.vfExtensions.push({
   }
 });
 
-window.addEventListener("storage", (e) => {
-  if (
-    e.key === "voiceflow-webchat-conversation" ||
-    e.key === "voiceflow-webchat-session"
-  ) {
-    console.warn("🧪 VF storage cleared → unfreezing page");
-    deactivateVFModal();
-  }
-});
 
 /* ---------- OPEN SCHEDULER EFFECT ---------- */
 window.vfExtensions.push({
@@ -379,18 +367,22 @@ function armFirstInteractionFreeze() {
   console.log("🧪 arming DOM-based first interaction listener");
 
   const handler = (e) => {
+    // Already frozen → ignore
     if (window.__vfModalActivated) return;
-    if (!e.isTrusted) return;   // REQUIRED
 
-    window.__vfModalActivated = true;
-    activateVFModal();
+    // Ignore non-human / system-triggered events
+    if (!e.isTrusted) return;
 
-    vfHost.removeEventListener("focusin", handler, true);
-    vfHost.removeEventListener("keydown", handler, true);
-    vfHost.removeEventListener("pointerdown", handler, true);
+    // ONLY allow mouse or keyboard intent
+    if (
+      e.type === "pointerdown" ||
+      e.type === "keydown"
+    ) {
+      window.__vfModalActivated = true;
+      activateVFModal();
+    }
   };
 
-  vfHost.addEventListener("focusin", handler, true);
   vfHost.addEventListener("keydown", handler, true);
   vfHost.addEventListener("pointerdown", handler, true);
 }
