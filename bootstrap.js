@@ -423,7 +423,7 @@ function armWhenVFReady() {
       verify: { projectID: "68f13d16ad1237134f502fee" },
       url: "https://general-runtime.voiceflow.com",
       versionID: "production",
-      autostart: true,
+      autostart: !isHomePage,
       assistant: {
         persistence: "localStorage",
         stylesheet:
