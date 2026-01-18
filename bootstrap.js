@@ -1,6 +1,6 @@
 console.log("🚀 VF BOOTSTRAP START");
 
-// Extensions (still minimal)
+// Minimal extensions
 window.vfExtensions = [];
 window.vfExtensions.push({
   name: "noop",
@@ -9,14 +9,13 @@ window.vfExtensions.push({
   effect: () => {}
 });
 
-// 🔴 ADD THIS BLOCK ONLY
-(function interceptSessionExpiry() {
-  const originalFetch = window.fetch;
-
-  window.fetch = async (...args) => {
-    const response = await originalFetch(...args);
-    return response;
-  };
+// 🔴 ADD ONLY THIS
+(function testMutationObserver() {
+  const observer = new MutationObserver(() => {});
+  observer.observe(document.documentElement, {
+    childList: true,
+    subtree: true
+  });
 })();
 
 (function loadVoiceflow() {
