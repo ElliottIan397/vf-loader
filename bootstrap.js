@@ -153,6 +153,16 @@ window.vfExtensions.push({
   }
 });
 
+window.addEventListener("storage", (e) => {
+  if (
+    e.key === "voiceflow-webchat-conversation" ||
+    e.key === "voiceflow-webchat-session"
+  ) {
+    console.warn("🧪 VF storage cleared → unfreezing page");
+    deactivateVFModal();
+  }
+});
+
 /* ---------- OPEN SCHEDULER EFFECT ---------- */
 window.vfExtensions.push({
   name: "OPEN_SCHEDULER",
@@ -291,6 +301,12 @@ function activateVFModal() {
   if (!document.querySelector(".vf-backdrop")) {
     const backdrop = document.createElement("div");
     backdrop.className = "vf-backdrop";
+
+    backdrop.addEventListener("click", () => {
+      console.warn("🧪 Backdrop clicked → unfreeze");
+      deactivateVFModal();
+    });
+
     document.body.appendChild(backdrop);
   }
 }
