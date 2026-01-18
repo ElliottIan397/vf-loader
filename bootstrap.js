@@ -368,27 +368,44 @@ function armFirstInteractionFreeze() {
 
   console.log("🧪 arming DOM-based first interaction listener");
 
-  const handler = (e) => {
-    if (window.__vfModalActivated) return;
-    if (!e.isTrusted) return;
+const handler = (e) => {
+  if (window.__vfModalActivated) return;
+  if (!e.isTrusted) return;
 
-    const vfHost = document.getElementById("voiceflow-chat-frame");
-    if (!vfHost) return;
+  const vfHost = document.getElementById("voiceflow-chat-frame");
+  if (!vfHost) return;
 
+  // --- POINTER EVENTS ---
+  if (e.type === "pointerdown") {
     const path = e.composedPath?.() || [];
     const originatedInsideVF =
       path.includes(vfHost) || vfHost.contains(e.target);
 
     if (!originatedInsideVF) return;
 
-    if (e.type === "pointerdown" || e.type === "keydown") {
-      window.__vfModalActivated = true;
-      activateVFModal();
-    }
-  };
+    window.__vfModalActivated = true;
+    activateVFModal();
+    return;
+  }
 
-  vfHost.addEventListener("keydown", handler, true);
-  vfHost.addEventListener("pointerdown", handler, true);
+  // --- KEYBOARD EVENTS ---
+  if (e.type === "keydown") {
+    const active = document.activeElement;
+
+    const vfHasFocus =
+      active === vfHost ||
+      vfHost.contains(active) ||
+      active?.tagName === "IFRAME";
+
+    if (!vfHasFocus) return;
+
+    window.__vfModalActivated = true;
+    activateVFModal();
+  }
+};
+
+vfHost.addEventListener("keydown", handler, true);
+vfHost.addEventListener("pointerdown", handler, true);
 }
 
 function armWhenVFReady() {
