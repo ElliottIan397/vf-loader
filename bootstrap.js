@@ -1,24 +1,6 @@
 console.log("🚀 VF BOOTSTRAP START");
 
-// 🔴 ADD ONLY THIS CSS INJECTION
-(function injectTestCSS() {
-  const style = document.createElement("style");
-  style.textContent = `
-    body.test-css {
-      position: static;
-    }
-  `;
-  document.head.appendChild(style);
-})();
-
-// Minimal extensions
 window.vfExtensions = [];
-window.vfExtensions.push({
-  name: "noop",
-  type: "effect",
-  match: () => false,
-  effect: () => {}
-});
 
 (function loadVoiceflow() {
   const script = document.createElement("script");
@@ -26,14 +8,18 @@ window.vfExtensions.push({
   script.type = "text/javascript";
 
   script.onload = function () {
+    const target = document.getElementById("voiceflow-chat-frame");
+    console.log("TARGET EXISTS?", !!target);
+
     window.voiceflow.chat.load({
       verify: { projectID: "68f13d16ad1237134f502fee" },
       url: "https://general-runtime.voiceflow.com",
       versionID: "production",
       autostart: false,
-      assistant: {
-        extensions: window.vfExtensions
-      }
+      render: target
+        ? { mode: "embedded", target }
+        : undefined,
+      assistant: { extensions: window.vfExtensions }
     });
   };
 
