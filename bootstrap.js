@@ -1,5 +1,10 @@
 console.log("🚀 VF BOOTSTRAP START");
 
+// 🔴 ADD ONLY THESE DOM READS
+const VF_HOME_TARGET_ID = "voiceflow-chat-frame";
+const isHomePage = !!document.getElementById(VF_HOME_TARGET_ID);
+console.log("isHomePage =", isHomePage);
+
 // Minimal extensions
 window.vfExtensions = [];
 window.vfExtensions.push({
@@ -8,15 +13,6 @@ window.vfExtensions.push({
   match: () => false,
   effect: () => {}
 });
-
-// 🔴 ADD ONLY THIS
-(function testMutationObserver() {
-  const observer = new MutationObserver(() => {});
-  observer.observe(document.documentElement, {
-    childList: true,
-    subtree: true
-  });
-})();
 
 (function loadVoiceflow() {
   const script = document.createElement("script");
