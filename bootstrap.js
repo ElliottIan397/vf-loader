@@ -1,5 +1,16 @@
 console.log("🚀 VF BOOTSTRAP START");
 
+// Define extensions FIRST
+window.vfExtensions = [];
+
+// Minimal placeholder extension
+window.vfExtensions.push({
+  name: "noop",
+  type: "effect",
+  match: () => false,
+  effect: () => {}
+});
+
 (function loadVoiceflow() {
   const script = document.createElement("script");
   script.src = "https://cdn.voiceflow.com/widget-next/bundle.mjs";
@@ -11,6 +22,9 @@ console.log("🚀 VF BOOTSTRAP START");
       url: "https://general-runtime.voiceflow.com",
       versionID: "production",
       autostart: false,
+      assistant: {
+        extensions: window.vfExtensions
+      }
     });
   };
 
