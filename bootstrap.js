@@ -13,6 +13,12 @@ if (document.body) {
   delete document.body.dataset.vfScrollY;
 }
 
+// 🔴 FORCE TOP ON INITIAL LOAD ONLY
+if (!sessionStorage.getItem("vf-initial-load")) {
+  sessionStorage.setItem("vf-initial-load", "1");
+  window.scrollTo(0, 0);
+}
+
 // Global State Flag (define ONCE)
 window.__vfModalActivated = false;
 
@@ -324,6 +330,11 @@ function deactivateVFModal() {
   }
 
   window.__vfModalActivated = false;
+
+  // 🔴 RE-ARM FOR NEXT ENTRY
+  setTimeout(() => {
+    armWhenVFReady();
+  }, 0);
 }
 
 // --------------------------------------------------------------
