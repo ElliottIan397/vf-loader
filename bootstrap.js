@@ -5,7 +5,15 @@
 
 console.log("🚀 VF BOOTSTRAP START");
 
-// Global State Flag
+// 🔴 HARD RESET MODAL STATE ON LOAD
+if (document.body) {
+  document.body.classList.remove("vf-modal-open");
+  document.body.style.top = "";
+  document.querySelector(".vf-backdrop")?.remove();
+  delete document.body.dataset.vfScrollY;
+}
+
+// Global State Flag (define ONCE)
 window.__vfModalActivated = false;
 
 // -----------------------------------------------------
@@ -13,6 +21,7 @@ window.__vfModalActivated = false;
 // -----------------------------------------------------
 const VF_HOME_TARGET_ID = "voiceflow-chat-frame";
 const isHomePage = !!document.getElementById(VF_HOME_TARGET_ID);
+
 console.log("🧪 isHomePage =", isHomePage);
 console.log("📍 VF PAGE MODE:", isHomePage ? "HOME (embedded)" : "NOT HOME (floating)");
 
@@ -330,6 +339,55 @@ function interceptStartNewChat() {
   });
 }
 
+// First Interaction Freeze Background    
+function armFirstInteractionFreeze() {
+  if (!isHomePage) return;
+
+  const vfHost = document.getElementById("voiceflow-chat-frame");
+  if (!vfHost) {
+    console.warn("🧪 VF host not found — cannot arm freeze");
+    return;
+  }
+
+  console.log("🧪 arming DOM-based first interaction listener");
+
+  const handler = (e) => {
+    if (window.__vfModalActivated) return;
+    if (!e.isTrusted) return;   // REQUIRED
+
+    window.__vfModalActivated = true;
+    activateVFModal();
+
+    vfHost.removeEventListener("focusin", handler, true);
+    vfHost.removeEventListener("keydown", handler, true);
+    vfHost.removeEventListener("pointerdown", handler, true);
+  };
+
+  vfHost.addEventListener("focusin", handler, true);
+  vfHost.addEventListener("keydown", handler, true);
+  vfHost.addEventListener("pointerdown", handler, true);
+}
+
+function armWhenVFReady() {
+  if (!isHomePage) return;
+
+  console.log("🧪 armWhenVFReady: waiting for VF DOM");
+
+  const observer = new MutationObserver(() => {
+    const vfHost = document.getElementById("voiceflow-chat-frame");
+
+    if (!vfHost) return;
+
+    // Embedded widget DOM is now real
+    console.log("🧪 VF DOM ready — arming first interaction freeze");
+
+    observer.disconnect();
+    armFirstInteractionFreeze();
+  });
+
+  observer.observe(document.body, { childList: true, subtree: true });
+}
+
 // -----------------------------------------------------
 // 3. Load Voiceflow widget (ONCE)
 // -----------------------------------------------------
@@ -365,7 +423,7 @@ function interceptStartNewChat() {
       console.log("🎉 VF CHAT INITIALIZED");
 
       // ✅ CALL IT HERE (single line)
-      armFirstInteractionFreeze();   // ← ADD
+      armWhenVFReady();          // ✅ NEW
       interceptStartNewChat();
 
       const hasConversation = localStorage.getItem(
@@ -376,35 +434,6 @@ function interceptStartNewChat() {
         window.voiceflow.chat.open();
       }
     });
-
-    // Fist Interaction Freeze Background    
-    function armFirstInteractionFreeze() {
-      if (!isHomePage) return;
-
-      const vfHost = document.getElementById("voiceflow-chat-frame");
-      if (!vfHost) {
-        console.warn("🧪 VF host not found — cannot arm freeze");
-        return;
-      }
-
-      console.log("🧪 arming DOM-based first interaction listener");
-
-      const handler = () => {
-        if (window.__vfModalActivated) return;
-
-        console.warn("🧪 DOM INTERACTION → FREEZE");
-        window.__vfModalActivated = true;
-        activateVFModal();
-
-        vfHost.removeEventListener("focusin", handler, true);
-        vfHost.removeEventListener("keydown", handler, true);
-        vfHost.removeEventListener("pointerdown", handler, true);
-      };
-
-      vfHost.addEventListener("focusin", handler, true);
-      vfHost.addEventListener("keydown", handler, true);
-      vfHost.addEventListener("pointerdown", handler, true);
-    }
 
     function applyFullWidthIfHome() {
       if (!isHomePage) return;
