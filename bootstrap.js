@@ -1,15 +1,23 @@
 console.log("🚀 VF BOOTSTRAP START");
 
-// Define extensions FIRST
+// Extensions (still minimal)
 window.vfExtensions = [];
-
-// Minimal placeholder extension
 window.vfExtensions.push({
   name: "noop",
   type: "effect",
   match: () => false,
   effect: () => {}
 });
+
+// 🔴 ADD THIS BLOCK ONLY
+(function interceptSessionExpiry() {
+  const originalFetch = window.fetch;
+
+  window.fetch = async (...args) => {
+    const response = await originalFetch(...args);
+    return response;
+  };
+})();
 
 (function loadVoiceflow() {
   const script = document.createElement("script");
