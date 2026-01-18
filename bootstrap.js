@@ -13,9 +13,6 @@ if (document.body) {
   delete document.body.dataset.vfScrollY;
 }
 
-// 🔴 FORCE TOP OF PAGE ON LOAD
-window.scrollTo(0, 0);
-
 // Global State Flag (define ONCE)
 window.__vfModalActivated = false;
 
@@ -373,11 +370,15 @@ function armFirstInteractionFreeze() {
     // Ignore non-human / system-triggered events
     if (!e.isTrusted) return;
 
-    // ONLY allow mouse or keyboard intent
-    if (
-      e.type === "pointerdown" ||
-      e.type === "keydown"
-    ) {
+    // 🔒 ONLY trigger if event originated inside VF shadow DOM
+    const path = e.composedPath?.() || [];
+    const originatedInsideVF = path.some(
+      el => el?.id === "voiceflow-chat-frame"
+    );
+
+    if (!originatedInsideVF) return;
+
+    if (e.type === "pointerdown" || e.type === "keydown") {
       window.__vfModalActivated = true;
       activateVFModal();
     }
@@ -450,7 +451,11 @@ function armWhenVFReady() {
       );
 
       if (hasConversation) {
-        window.voiceflow.chat.open();
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            window.voiceflow.chat.open();
+          });
+        });
       }
     });
 
