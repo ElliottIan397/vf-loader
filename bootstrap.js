@@ -1,6 +1,6 @@
 console.log("🚀 VF BOOTSTRAP START");
 
-// Minimal extensions container (safe to keep)
+// Minimal extensions container
 window.vfExtensions = [];
 
 (function loadVoiceflow() {
@@ -11,23 +11,29 @@ window.vfExtensions = [];
   script.onload = function () {
     const target = document.getElementById("voiceflow-chat-frame");
 
-    if (target) {
-      // 🔴 KEY FIX: delay embedded render until DOM is ready
-      document.addEventListener("DOMContentLoaded", () => {
-        window.voiceflow.chat.load({
-          verify: { projectID: "68f13d16ad1237134f502fee" },
-          url: "https://general-runtime.voiceflow.com",
-          versionID: "production",
-          autostart: false,
-          render: {
-            mode: "embedded",
-            target
-          },
-          assistant: {
-            extensions: window.vfExtensions
-          }
-        });
+    const loadEmbedded = () => {
+      window.voiceflow.chat.load({
+        verify: { projectID: "68f13d16ad1237134f502fee" },
+        url: "https://general-runtime.voiceflow.com",
+        versionID: "production",
+        autostart: false,
+        render: {
+          mode: "embedded",
+          target
+        },
+        assistant: {
+          extensions: window.vfExtensions
+        }
       });
+    };
+
+    if (target) {
+      // ✅ RUN NOW if DOM already ready, otherwise wait
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", loadEmbedded, { once: true });
+      } else {
+        loadEmbedded();
+      }
     } else {
       // Floating widget (non-home pages)
       window.voiceflow.chat.load({
