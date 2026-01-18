@@ -285,7 +285,7 @@ function activateVFModal() {
   if (isHomePage && window.voiceflow?.chat) {
     window.voiceflow.chat.open();
   }
-  
+
   injectVFModalCSS();
 
   const scrollY = window.scrollY;
@@ -369,17 +369,15 @@ function armFirstInteractionFreeze() {
   console.log("🧪 arming DOM-based first interaction listener");
 
   const handler = (e) => {
-    // Already frozen → ignore
     if (window.__vfModalActivated) return;
-
-    // Ignore non-human / system-triggered events
     if (!e.isTrusted) return;
 
-    // 🔒 ONLY trigger if event originated inside VF shadow DOM
+    const vfHost = document.getElementById("voiceflow-chat-frame");
+    if (!vfHost) return;
+
     const path = e.composedPath?.() || [];
-    const originatedInsideVF = path.some(
-      el => el?.id === "voiceflow-chat-frame"
-    );
+    const originatedInsideVF =
+      path.includes(vfHost) || vfHost.contains(e.target);
 
     if (!originatedInsideVF) return;
 
