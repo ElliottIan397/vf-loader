@@ -281,6 +281,11 @@ function injectVFModalCSS() {
 }
 
 function activateVFModal() {
+  // ✅ Ensure widget is visible BEFORE freezing
+  if (isHomePage && window.voiceflow?.chat) {
+    window.voiceflow.chat.open();
+  }
+  
   injectVFModalCSS();
 
   const scrollY = window.scrollY;
@@ -445,18 +450,6 @@ function armWhenVFReady() {
       // ✅ CALL IT HERE (single line)
       armWhenVFReady();          // ✅ NEW
       interceptStartNewChat();
-
-      const hasConversation = localStorage.getItem(
-        "voiceflow-webchat-conversation"
-      );
-
-      if (hasConversation) {
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            window.voiceflow.chat.open();
-          });
-        });
-      }
     });
 
     function applyFullWidthIfHome() {
