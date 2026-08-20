@@ -29,7 +29,22 @@ const VF_SITE_CONFIG = {
   agentName: "Reva",
   avatarUrl: "https://info.digitolservices.com/hubfs/Digitol/Digitol/Agent%20Reva.png",
   accentColor: "#3498db",
-  subtitle: "Your AI Agent. Real Answers."
+  subtitle: "Your AI Agent. Real Answers.",
+
+prompts: [
+  {
+    label: "Find a product",
+    query: "Help me find a product"
+  },
+  {
+    label: "Explore our services",
+    query: "Tell me about your services"
+  },
+  {
+    label: "Get support",
+    query: "I need help or support"
+  }
+]
 };
 
 console.log("🧪 isHomePage =", isHomePage);
@@ -412,6 +427,37 @@ body.vf-modal-open #voiceflow-chat-frame {
   opacity: 1;
 }
 
+.vf-resting-prompts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.vf-resting-prompt {
+  padding: 7px 14px;
+
+  border: 1px solid #d7d7d7;
+  border-radius: 18px;
+
+  background: #f7f7f7;
+  color: #555;
+
+  font-size: 13px;
+  line-height: 1.2;
+
+  cursor: pointer;
+
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.vf-resting-prompt:hover {
+  background: #fff;
+  border-color: #aaa;
+}
+
 .vf-resting-send {
   flex: 0 0 54px;
   width: 54px;
@@ -668,6 +714,18 @@ function createVFRestingShell() {
   </button>
 </div>
 
+<div class="vf-resting-prompts">
+  ${VF_SITE_CONFIG.prompts.map(prompt => `
+    <button
+      type="button"
+      class="vf-resting-prompt"
+      data-query="${prompt.query}"
+    >
+      ${prompt.label}
+    </button>
+  `).join("")}
+</div>
+
     </div>
   `;
 
@@ -675,6 +733,7 @@ function createVFRestingShell() {
 
 const queryInput = shell.querySelector(".vf-resting-query");
 const sendButton = shell.querySelector(".vf-resting-send");
+const promptButtons = shell.querySelectorAll(".vf-resting-prompt");
 
 function openCommandCenter(query = "") {
   const cleanQuery = query.trim();
@@ -725,6 +784,18 @@ queryInput.addEventListener("keydown", (e) => {
   e.stopPropagation();
 
   openCommandCenter(queryInput.value);
+});
+
+// Suggested prompts: open Command Center and send configured query
+promptButtons.forEach((button) => {
+  button.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const query = button.dataset.query || "";
+
+    openCommandCenter(query);
+  });
 });
 
 // Clicking elsewhere on the resting card opens normally
