@@ -339,10 +339,9 @@ function deactivateVFModal() {
 
   window.__vfModalActivated = false;
 
-  // 🔴 RE-ARM FOR NEXT ENTRY
-  setTimeout(() => {
-    armWhenVFReady();
-  }, 0);
+  // Re-enable Command Center activation for the next interaction.
+  // Existing event listeners remain attached.
+  window.__vfModalActivated = false;
 }
 
 // --------------------------------------------------------------
