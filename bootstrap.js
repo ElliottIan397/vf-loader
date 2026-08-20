@@ -294,6 +294,132 @@ body.vf-modal-open #voiceflow-chat-frame {
   border-radius: 16px;
   box-shadow: 0 24px 70px rgba(0,0,0,0.30);
 }
+/* -------------------------------------------------
+   Compact resting Agent shell
+   ------------------------------------------------- */
+
+#vf-resting-shell {
+  width: 100%;
+  min-height: 220px;
+  margin: 24px 0;
+  padding: 28px 32px;
+
+  display: flex;
+  align-items: center;
+  gap: 36px;
+
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 18px;
+
+  box-shadow: 0 10px 35px rgba(0,0,0,0.10);
+
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.vf-resting-agent {
+  width: 38%;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.vf-resting-avatar {
+  flex: 0 0 84px;
+}
+
+.vf-avatar-placeholder {
+  width: 84px;
+  height: 84px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+  background: #3498db;
+
+  color: #fff;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.vf-resting-copy {
+  flex: 1;
+}
+
+.vf-resting-title {
+  font-size: 28px;
+  line-height: 1.15;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.vf-resting-subtitle {
+  font-size: 17px;
+  font-weight: 500;
+  color: #3498db;
+  margin-bottom: 14px;
+}
+
+.vf-resting-description {
+  font-size: 14px;
+  line-height: 1.45;
+  color: #555;
+}
+
+.vf-resting-action {
+  width: 62%;
+}
+
+.vf-resting-input {
+  min-height: 78px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 16px 0 22px;
+
+  border: 2px solid #ddd;
+  border-radius: 14px;
+
+  color: #777;
+  font-size: 15px;
+
+  background: #fff;
+}
+
+.vf-resting-send {
+  flex: 0 0 54px;
+  width: 54px;
+  height: 54px;
+
+  border: 0;
+  border-radius: 50%;
+
+  background: #3498db;
+  color: #fff;
+
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+@media (max-width: 767px) {
+  #vf-resting-shell {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 22px;
+    gap: 20px;
+  }
+
+  .vf-resting-agent,
+  .vf-resting-action {
+    width: 100%;
+  }
+}
   `;
   document.head.appendChild(style);
 }
@@ -337,7 +463,19 @@ function deactivateVFModal() {
     delete document.body.dataset.vfScrollY;
   }
 
-  window.__vfModalActivated = false;
+  // Return home page Agent to compact resting shell
+  if (isHomePage) {
+    const vfHost = document.getElementById(VF_HOME_TARGET_ID);
+    const shell = document.getElementById("vf-resting-shell");
+
+    if (vfHost) {
+      vfHost.style.display = "none";
+    }
+
+    if (shell) {
+      shell.style.display = "flex";
+    }
+  }
 
   // Re-enable Command Center activation for the next interaction.
   // Existing event listeners remain attached.
@@ -460,35 +598,54 @@ function createVFRestingShell() {
 
   shell.innerHTML = `
     <div class="vf-resting-agent">
+
       <div class="vf-resting-avatar">
-        <img
-          src="https://digitolblob.azureedge.net/clientsite/images/ai/reva.png"
-          alt="AI Agent"
-        />
+        <div class="vf-avatar-placeholder">AI</div>
       </div>
 
       <div class="vf-resting-copy">
         <div class="vf-resting-title">Chat with Reva</div>
-        <div class="vf-resting-subtitle">Your AI Agent. Real Answers.</div>
+
+        <div class="vf-resting-subtitle">
+          Your AI Agent. Real Answers.
+        </div>
+
         <div class="vf-resting-description">
           Powered by our Natural Language Model (NLM) with real-time
           access to our Living Knowledge Base. Ask anything.
           Get accurate answers instantly.
         </div>
       </div>
+
     </div>
 
     <div class="vf-resting-action">
+
       <div class="vf-resting-input">
         <span>Ask me anything about our services, solutions, or technology...</span>
-        <button type="button" class="vf-resting-send" aria-label="Open AI Agent">
+
+        <button
+          type="button"
+          class="vf-resting-send"
+          aria-label="Open AI Agent"
+        >
           &#8594;
         </button>
       </div>
+
     </div>
   `;
 
   vfHost.parentNode.insertBefore(shell, vfHost);
+
+  // Enter Command Center from the resting shell
+  shell.addEventListener("click", () => {
+    shell.style.display = "none";
+    vfHost.style.display = "block";
+
+    window.__vfModalActivated = true;
+    activateVFModal();
+  });
 }
 
 // -----------------------------------------------------
@@ -528,9 +685,17 @@ function createVFRestingShell() {
     window.voiceflow.chat.load(loadConfig).then(() => {
       console.log("🎉 VF CHAT INITIALIZED");
 
-      // ✅ CALL IT HERE (single line)
-      armWhenVFReady();          // ✅ NEW
+      armWhenVFReady();
       interceptStartNewChat();
+
+      // Home page starts with custom resting shell,
+      // not the native Voiceflow interface.
+      if (isHomePage) {
+        const vfHost = document.getElementById(VF_HOME_TARGET_ID);
+        if (vfHost) {
+          vfHost.style.display = "none";
+        }
+      }
     });
 
     function applyFullWidthIfHome() {
