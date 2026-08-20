@@ -446,6 +446,52 @@ function armWhenVFReady() {
 }
 
 // -----------------------------------------------------
+// Custom compact Agent resting shell
+// -----------------------------------------------------
+function createVFRestingShell() {
+  if (!isHomePage) return;
+  if (document.getElementById("vf-resting-shell")) return;
+
+  const vfHost = document.getElementById(VF_HOME_TARGET_ID);
+  if (!vfHost) return;
+
+  const shell = document.createElement("div");
+  shell.id = "vf-resting-shell";
+
+  shell.innerHTML = `
+    <div class="vf-resting-agent">
+      <div class="vf-resting-avatar">
+        <img
+          src="https://digitolblob.azureedge.net/clientsite/images/ai/reva.png"
+          alt="AI Agent"
+        />
+      </div>
+
+      <div class="vf-resting-copy">
+        <div class="vf-resting-title">Chat with Reva</div>
+        <div class="vf-resting-subtitle">Your AI Agent. Real Answers.</div>
+        <div class="vf-resting-description">
+          Powered by our Natural Language Model (NLM) with real-time
+          access to our Living Knowledge Base. Ask anything.
+          Get accurate answers instantly.
+        </div>
+      </div>
+    </div>
+
+    <div class="vf-resting-action">
+      <div class="vf-resting-input">
+        <span>Ask me anything about our services, solutions, or technology...</span>
+        <button type="button" class="vf-resting-send" aria-label="Open AI Agent">
+          &#8594;
+        </button>
+      </div>
+    </div>
+  `;
+
+  vfHost.parentNode.insertBefore(shell, vfHost);
+}
+
+// -----------------------------------------------------
 // 3. Load Voiceflow widget (ONCE)
 // -----------------------------------------------------
 (function loadVoiceflow() {
@@ -455,6 +501,9 @@ function armWhenVFReady() {
 
   script.onload = function () {
     console.log("📦 VF WIDGET LOADED");
+
+    // Build compact resting shell on embedded home page
+    createVFRestingShell();
 
     const loadConfig = {
       verify: { projectID: "68f13d16ad1237134f502fee" },
