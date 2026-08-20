@@ -679,17 +679,31 @@ const sendButton = shell.querySelector(".vf-resting-send");
 function openCommandCenter(query = "") {
   const cleanQuery = query.trim();
 
-  // #6A only: capture it for testing.
-  // We will send it to Voiceflow in #6B.
-  window.__vfPendingQuery = cleanQuery;
-
-  console.log("🧪 Resting shell query captured:", cleanQuery);
-
   shell.style.display = "none";
   vfHost.style.display = "block";
 
   window.__vfModalActivated = true;
   activateVFModal();
+
+  // If the visitor entered a question in the resting shell,
+  // hand it directly to Voiceflow after Command Center opens.
+  if (cleanQuery) {
+    setTimeout(() => {
+      const api = window.voiceflow?.chat;
+
+      if (!api || typeof api.interact !== "function") {
+        console.warn("VF API not ready for resting-shell query");
+        return;
+      }
+
+      console.log("🚀 Sending resting-shell query to Voiceflow:", cleanQuery);
+
+      api.interact({
+        type: "text",
+        payload: cleanQuery
+      });
+    }, 400);
+  }
 }
 
 // Clicking into the input must NOT open Command Center
