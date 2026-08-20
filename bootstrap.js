@@ -393,6 +393,25 @@ body.vf-modal-open #voiceflow-chat-frame {
   background: #fff;
 }
 
+.vf-resting-query {
+  flex: 1;
+  min-width: 0;
+
+  border: 0;
+  outline: 0;
+  background: transparent;
+
+  font: inherit;
+  color: #333;
+
+  padding: 0 18px 0 0;
+}
+
+.vf-resting-query::placeholder {
+  color: #777;
+  opacity: 1;
+}
+
 .vf-resting-send {
   flex: 0 0 54px;
   width: 54px;
@@ -632,31 +651,72 @@ function createVFRestingShell() {
 
     <div class="vf-resting-action">
 
-      <div class="vf-resting-input">
-        <span>Ask me anything about our services, solutions, or technology...</span>
+<div class="vf-resting-input">
+  <input
+    type="text"
+    class="vf-resting-query"
+    placeholder="Ask me anything about our services, solutions, or technology..."
+    autocomplete="off"
+  />
 
-        <button
-          type="button"
-          class="vf-resting-send"
-          aria-label="Open AI Agent"
-        >
-          &#8594;
-        </button>
-      </div>
+  <button
+    type="button"
+    class="vf-resting-send"
+    aria-label="Ask AI Agent"
+  >
+    &#8594;
+  </button>
+</div>
 
     </div>
   `;
 
   vfHost.parentNode.insertBefore(shell, vfHost);
 
-  // Enter Command Center from the resting shell
-  shell.addEventListener("click", () => {
-    shell.style.display = "none";
-    vfHost.style.display = "block";
+const queryInput = shell.querySelector(".vf-resting-query");
+const sendButton = shell.querySelector(".vf-resting-send");
 
-    window.__vfModalActivated = true;
-    activateVFModal();
-  });
+function openCommandCenter(query = "") {
+  const cleanQuery = query.trim();
+
+  // #6A only: capture it for testing.
+  // We will send it to Voiceflow in #6B.
+  window.__vfPendingQuery = cleanQuery;
+
+  console.log("🧪 Resting shell query captured:", cleanQuery);
+
+  shell.style.display = "none";
+  vfHost.style.display = "block";
+
+  window.__vfModalActivated = true;
+  activateVFModal();
+}
+
+// Clicking into the input must NOT open Command Center
+queryInput.addEventListener("click", (e) => {
+  e.stopPropagation();
+});
+
+// Arrow: capture query and open
+sendButton.addEventListener("click", (e) => {
+  e.stopPropagation();
+  openCommandCenter(queryInput.value);
+});
+
+// Enter: capture query and open
+queryInput.addEventListener("keydown", (e) => {
+  if (e.key !== "Enter") return;
+
+  e.preventDefault();
+  e.stopPropagation();
+
+  openCommandCenter(queryInput.value);
+});
+
+// Clicking elsewhere on the resting card opens normally
+shell.addEventListener("click", () => {
+  openCommandCenter();
+});
 }
 
 // -----------------------------------------------------
