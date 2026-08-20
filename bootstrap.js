@@ -368,44 +368,44 @@ function armFirstInteractionFreeze() {
 
   console.log("🧪 arming DOM-based first interaction listener");
 
-const handler = (e) => {
-  if (window.__vfModalActivated) return;
-  if (!e.isTrusted) return;
+  const handler = (e) => {
+    if (window.__vfModalActivated) return;
+    if (!e.isTrusted) return;
 
-  const vfHost = document.getElementById("voiceflow-chat-frame");
-  if (!vfHost) return;
+    const vfHost = document.getElementById("voiceflow-chat-frame");
+    if (!vfHost) return;
 
-  // --- POINTER EVENTS ---
-  if (e.type === "pointerdown") {
-    const path = e.composedPath?.() || [];
-    const originatedInsideVF =
-      path.includes(vfHost) || vfHost.contains(e.target);
+    // --- POINTER EVENTS ---
+    if (e.type === "pointerdown") {
+      const path = e.composedPath?.() || [];
+      const originatedInsideVF =
+        path.includes(vfHost) || vfHost.contains(e.target);
 
-    if (!originatedInsideVF) return;
+      if (!originatedInsideVF) return;
 
-    window.__vfModalActivated = true;
-    activateVFModal();
-    return;
-  }
+      window.__vfModalActivated = true;
+      activateVFModal();
+      return;
+    }
 
-  // --- KEYBOARD EVENTS ---
-  if (e.type === "keydown") {
-    const active = document.activeElement;
+    // --- KEYBOARD EVENTS ---
+    if (e.type === "keydown") {
+      const active = document.activeElement;
 
-    const vfHasFocus =
-      active === vfHost ||
-      vfHost.contains(active) ||
-      active?.tagName === "IFRAME";
+      const vfHasFocus =
+        active === vfHost ||
+        vfHost.contains(active) ||
+        active?.tagName === "IFRAME";
 
-    if (!vfHasFocus) return;
+      if (!vfHasFocus) return;
 
-    window.__vfModalActivated = true;
-    activateVFModal();
-  }
-};
+      window.__vfModalActivated = true;
+      activateVFModal();
+    }
+  };
 
-vfHost.addEventListener("keydown", handler, true);
-vfHost.addEventListener("pointerdown", handler, true);
+  vfHost.addEventListener("keydown", handler, true);
+  vfHost.addEventListener("pointerdown", handler, true);
 }
 
 function armWhenVFReady() {
@@ -469,6 +469,12 @@ function armWhenVFReady() {
 
     function applyFullWidthIfHome() {
       if (!isHomePage) return;
+
+      // Compact resting state for embedded home-page Agent
+      const vfFrame = document.getElementById("voiceflow-chat-frame");
+      if (vfFrame) {
+        vfFrame.style.height = "280px";
+      }
 
       const vfHost = document.getElementById("voiceflow-chat-frame");
       const shadowRoot = vfHost?.shadowRoot;
