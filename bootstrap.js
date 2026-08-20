@@ -22,6 +22,16 @@ window.__vfModalActivated = false;
 const VF_HOME_TARGET_ID = "voiceflow-chat-frame";
 const isHomePage = !!document.getElementById(VF_HOME_TARGET_ID);
 
+// -----------------------------------------------------
+// Site-specific Agent configuration
+// -----------------------------------------------------
+const VF_SITE_CONFIG = {
+  agentName: "Reva",
+  avatarUrl: "https://info.digitolservices.com/hubfs/Digitol/Digitol/Agent%20Reva.png",
+  accentColor: "#3498db",
+  subtitle: "Your AI Agent. Real Answers."
+};
+
 console.log("🧪 isHomePage =", isHomePage);
 console.log("📍 VF PAGE MODE:", isHomePage ? "HOME (embedded)" : "NOT HOME (floating)");
 
@@ -329,20 +339,12 @@ body.vf-modal-open #voiceflow-chat-frame {
   flex: 0 0 84px;
 }
 
-.vf-avatar-placeholder {
+.vf-resting-avatar-img {
   width: 84px;
   height: 84px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
+  display: block;
+  object-fit: cover;
   border-radius: 50%;
-  background: #3498db;
-
-  color: #fff;
-  font-size: 22px;
-  font-weight: 700;
 }
 
 .vf-resting-copy {
@@ -602,16 +604,22 @@ function createVFRestingShell() {
   shell.innerHTML = `
     <div class="vf-resting-agent">
 
-      <div class="vf-resting-avatar">
-        <div class="vf-avatar-placeholder">AI</div>
-      </div>
+ <div class="vf-resting-avatar">
+  <img
+    class="vf-resting-avatar-img"
+    src="${VF_SITE_CONFIG.avatarUrl}"
+    alt="${VF_SITE_CONFIG.agentName} AI Agent"
+  />
+</div>
 
       <div class="vf-resting-copy">
-        <div class="vf-resting-title">Chat with Reva</div>
+        <div class="vf-resting-title">
+  Chat with ${VF_SITE_CONFIG.agentName}
+</div>
 
         <div class="vf-resting-subtitle">
-          Your AI Agent. Real Answers.
-        </div>
+  ${VF_SITE_CONFIG.subtitle}
+</div>
 
         <div class="vf-resting-description">
           Powered by our Natural Language Model (NLM) with real-time
