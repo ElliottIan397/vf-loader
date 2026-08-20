@@ -590,6 +590,9 @@ function createVFRestingShell() {
   if (!isHomePage) return;
   if (document.getElementById("vf-resting-shell")) return;
 
+  // Ensure resting-shell styling exists immediately on page load
+  injectVFModalCSS();
+
   const vfHost = document.getElementById(VF_HOME_TARGET_ID);
   if (!vfHost) return;
 
