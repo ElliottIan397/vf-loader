@@ -272,10 +272,28 @@ function injectVFModalCSS() {
       z-index: 9998;
     }
 
-    #voiceflow-chat-frame {
-      position: relative;
-      z-index: 9999;
-    }
+#voiceflow-chat-frame {
+  position: relative;
+  z-index: 9999;
+}
+
+/* Command Center state */
+body.vf-modal-open #voiceflow-chat-frame {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+
+  width: min(1000px, calc(100vw - 60px)) !important;
+  height: min(680px, calc(100vh - 60px)) !important;
+
+  margin: 0 !important;
+  z-index: 9999 !important;
+
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 24px 70px rgba(0,0,0,0.30);
+}
   `;
   document.head.appendChild(style);
 }
