@@ -21,6 +21,7 @@ window.__vfModalActivated = false;
 // -----------------------------------------------------
 const VF_HOME_TARGET_ID = "voiceflow-chat-frame";
 const isHomePage = !!document.getElementById(VF_HOME_TARGET_ID);
+const isPhone = window.innerWidth < 768;
 
 // -----------------------------------------------------
 // Resolve site-specific configuration
