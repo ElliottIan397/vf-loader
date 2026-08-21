@@ -570,7 +570,12 @@ function applyFullWidthIfHome() {
   const vfFrame = document.getElementById("voiceflow-chat-frame");
   if (vfFrame) {
     vfFrame.style.width = "100%";
-    vfFrame.style.height = "480px";
+
+    if (window.innerWidth <= 767) {
+      vfFrame.style.height = "100dvh";
+    } else {
+      vfFrame.style.height = "480px";
+    }
   }
 
   const vfHost = document.getElementById("voiceflow-chat-frame");
