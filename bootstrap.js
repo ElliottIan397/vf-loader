@@ -687,7 +687,7 @@ function createVFRestingShell() {
   <input
     type="text"
     class="vf-resting-query"
-    placeholder="Ask me anything about our services, solutions, or technology..."
+    placeholder="${VF_SITE_CONFIG.inputPlaceholder}"
     autocomplete="off"
   />
 
