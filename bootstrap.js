@@ -333,20 +333,7 @@ body.vf-modal-open #voiceflow-chat-frame {
   box-shadow: 0 24px 70px rgba(0,0,0,0.30);
 }
 
-@media (max-width: 767px) {
-  body.vf-modal-open #voiceflow-chat-frame {
-    top: 0 !important;
-    left: 0 !important;
-    transform: none !important;
 
-    width: 100vw !important;
-    height: 100dvh !important;
-
-    border-radius: 0 !important;
-    margin: 0 !important;
-  }
-}
-  
 /* -------------------------------------------------
    Compact resting Agent shell
    ------------------------------------------------- */
@@ -585,12 +572,7 @@ function applyFullWidthIfHome() {
   const vfFrame = document.getElementById("voiceflow-chat-frame");
   if (vfFrame) {
     vfFrame.style.width = "100%";
-
-    if (window.innerWidth <= 767) {
-      vfFrame.style.height = "100dvh";
-    } else {
-      vfFrame.style.height = "480px";
-    }
+    vfFrame.style.height = "480px";
   }
 
   const vfHost = document.getElementById("voiceflow-chat-frame");
@@ -601,12 +583,10 @@ function applyFullWidthIfHome() {
 
   const style = document.createElement("style");
   style.id = "vf-fullwidth-override";
-  style.textContent = `
-  @media (min-width: 768px) {
-    .vfrc-chat {
-      width: 100% !important;
-      max-width: 100% !important;
-    }
+style.textContent = `
+  .vfrc-chat {
+    width: 100% !important;
+    max-width: 100% !important;
   }
 `;
 
