@@ -504,6 +504,21 @@ function activateVFModal() {
 
     document.body.appendChild(backdrop);
   }
+  // Visible exit control for Command Center
+  if (!document.querySelector(".vf-modal-close")) {
+    const closeButton = document.createElement("button");
+
+    closeButton.type = "button";
+    closeButton.className = "vf-modal-close";
+    closeButton.innerHTML = "&times;&nbsp; Close";
+    closeButton.setAttribute("aria-label", "Close Command Center");
+
+    closeButton.addEventListener("click", () => {
+      deactivateVFModal();
+    });
+
+    document.body.appendChild(closeButton);
+  }  
 }
 
     function applyFullWidthIfHome() {
