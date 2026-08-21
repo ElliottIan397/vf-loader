@@ -674,11 +674,9 @@ function createVFRestingShell() {
   ${VF_SITE_CONFIG.subtitle}
 </div>
 
-        <div class="vf-resting-description">
-          Powered by our Natural Language Model (NLM) with real-time
-          access to our Living Knowledge Base. Ask anything.
-          Get accurate answers instantly.
-        </div>
+<div class="vf-resting-description">
+  ${VF_SITE_CONFIG.description}
+</div>
       </div>
 
     </div>
