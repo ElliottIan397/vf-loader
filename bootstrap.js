@@ -531,6 +531,10 @@ if (isHomePage) {
   if (vfHost) {
     vfHost.style.display = "block";
   }
+
+  setTimeout(() => {
+    applyFullWidthIfHome();
+  }, 50);
 }
 
   // Re-enable Command Center activation for the next interaction.
