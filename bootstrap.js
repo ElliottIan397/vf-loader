@@ -807,7 +807,7 @@ function createVFRestingShell() {
     createVFRestingShell();
 
     const loadConfig = {
-      verify: { projectID: "68f13d16ad1237134f502fee" },
+      verify: { projectID: VF_SITE_CONFIG.projectID },
       url: "https://general-runtime.voiceflow.com",
       versionID: "production",
       autostart: !isHomePage,
