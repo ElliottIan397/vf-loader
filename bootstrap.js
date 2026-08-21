@@ -332,6 +332,21 @@ body.vf-modal-open #voiceflow-chat-frame {
   border-radius: 16px;
   box-shadow: 0 24px 70px rgba(0,0,0,0.30);
 }
+
+@media (max-width: 767px) {
+  body.vf-modal-open #voiceflow-chat-frame {
+    top: 0 !important;
+    left: 0 !important;
+    transform: none !important;
+
+    width: 100vw !important;
+    height: 100dvh !important;
+
+    border-radius: 0 !important;
+    margin: 0 !important;
+  }
+}
+  
 /* -------------------------------------------------
    Compact resting Agent shell
    ------------------------------------------------- */
