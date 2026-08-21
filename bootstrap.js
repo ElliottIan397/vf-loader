@@ -518,19 +518,20 @@ function deactivateVFModal() {
     delete document.body.dataset.vfScrollY;
   }
 
-  // Return home page Agent to compact resting shell
-  if (isHomePage) {
-    const vfHost = document.getElementById(VF_HOME_TARGET_ID);
-    const shell = document.getElementById("vf-resting-shell");
+// After first engagement, keep the real Voiceflow conversation
+// visible in its normal embedded home-page position.
+if (isHomePage) {
+  const vfHost = document.getElementById(VF_HOME_TARGET_ID);
+  const shell = document.getElementById("vf-resting-shell");
 
-    if (vfHost) {
-      vfHost.style.display = "none";
-    }
-
-    if (shell) {
-      shell.style.display = "flex";
-    }
+  if (shell) {
+    shell.style.display = "none";
   }
+
+  if (vfHost) {
+    vfHost.style.display = "block";
+  }
+}
 
   // Re-enable Command Center activation for the next interaction.
   // Existing event listeners remain attached.
