@@ -584,7 +584,7 @@ function applyFullWidthIfHome() {
 
   const style = document.createElement("style");
   style.id = "vf-fullwidth-override";
-style.textContent = `
+  style.textContent = `
   .vfrc-chat {
     width: 100% !important;
     max-width: 100% !important;
@@ -911,7 +911,7 @@ function createVFRestingShell() {
       },
     };
 
-    if (isHomePage) {
+    if (isHomePage && !isPhone) {
       loadConfig.render = {
         mode: "embedded",
         target: document.getElementById(VF_HOME_TARGET_ID),
