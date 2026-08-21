@@ -587,11 +587,13 @@ function applyFullWidthIfHome() {
   const style = document.createElement("style");
   style.id = "vf-fullwidth-override";
   style.textContent = `
+  @media (min-width: 768px) {
     .vfrc-chat {
       width: 100% !important;
       max-width: 100% !important;
     }
-  `;
+  }
+`;
 
   shadowRoot.appendChild(style);
 }
