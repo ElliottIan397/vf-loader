@@ -580,6 +580,7 @@ function deactivateVFModal() {
   document.body.classList.remove("vf-modal-open");
   document.body.style.top = "";
   document.querySelector(".vf-backdrop")?.remove();
+  document.querySelector(".vf-modal-close")?.remove();
 
   if (scrollY) {
     window.scrollTo(0, parseInt(scrollY, 10));
