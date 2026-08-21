@@ -736,6 +736,7 @@ function armWhenVFReady() {
 // Custom compact Agent resting shell
 // -----------------------------------------------------
 function createVFRestingShell() {
+  if (isPhone) return;
   if (!isHomePage) return;
   if (document.getElementById("vf-resting-shell")) return;
 
