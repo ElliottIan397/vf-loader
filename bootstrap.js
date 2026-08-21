@@ -511,10 +511,10 @@ function activateVFModal() {
 
       // Compact resting state for embedded home-page Agent
       const vfFrame = document.getElementById("voiceflow-chat-frame");
-      if (vfFrame) {
-        vfFrame.style.width = "100%";
-        vfvFrame.style.height = "480px";
-      }
+if (vfFrame) {
+  vfFrame.style.width = "100%";
+  vfFrame.style.height = "480px";
+}
 
       const vfHost = document.getElementById("voiceflow-chat-frame");
       const shadowRoot = vfHost?.shadowRoot;
@@ -533,7 +533,7 @@ function activateVFModal() {
 
       shadowRoot.appendChild(style);
     }
-    
+
 function deactivateVFModal() {
   const scrollY = document.body.dataset.vfScrollY;
 
