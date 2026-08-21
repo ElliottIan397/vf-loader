@@ -852,7 +852,7 @@ function createVFRestingShell() {
       const vfFrame = document.getElementById("voiceflow-chat-frame");
       if (vfFrame) {
         vfFrame.style.width = "100%";
-        fvFrame.style.height = "480px";
+        vfvFrame.style.height = "480px";
       }
 
       const vfHost = document.getElementById("voiceflow-chat-frame");
