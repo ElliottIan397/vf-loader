@@ -847,6 +847,7 @@ function createVFRestingShell() {
       // Compact resting state for embedded home-page Agent
       const vfFrame = document.getElementById("voiceflow-chat-frame");
       if (vfFrame) {
+        vfFrame.style.width = "100%";
         fvFrame.style.height = "480px";
       }
 
