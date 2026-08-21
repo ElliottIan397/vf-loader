@@ -285,6 +285,31 @@ function injectVFModalCSS() {
       z-index: 9998;
     }
 
+.vf-modal-close {
+  position: fixed;
+  top: 18px;
+  right: 22px;
+  z-index: 10001;
+
+  padding: 9px 16px;
+
+  border: 1px solid rgba(255,255,255,0.65);
+  border-radius: 20px;
+
+  background: rgba(0,0,0,0.55);
+  color: #fff;
+
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+
+  cursor: pointer;
+}
+
+.vf-modal-close:hover {
+  background: rgba(0,0,0,0.75);
+}
+
 #voiceflow-chat-frame {
   position: relative;
   z-index: 9999;
