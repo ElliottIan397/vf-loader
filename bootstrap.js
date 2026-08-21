@@ -506,6 +506,34 @@ function activateVFModal() {
   }
 }
 
+    function applyFullWidthIfHome() {
+      if (!isHomePage) return;
+
+      // Compact resting state for embedded home-page Agent
+      const vfFrame = document.getElementById("voiceflow-chat-frame");
+      if (vfFrame) {
+        vfFrame.style.width = "100%";
+        vfvFrame.style.height = "480px";
+      }
+
+      const vfHost = document.getElementById("voiceflow-chat-frame");
+      const shadowRoot = vfHost?.shadowRoot;
+      if (!shadowRoot) return;
+
+      if (shadowRoot.querySelector("#vf-fullwidth-override")) return;
+
+      const style = document.createElement("style");
+      style.id = "vf-fullwidth-override";
+      style.textContent = `
+    .vfrc-chat {
+      width: 100% !important;
+      max-width: 100% !important;
+    }
+  `;
+
+      shadowRoot.appendChild(style);
+    }
+    
 function deactivateVFModal() {
   const scrollY = document.body.dataset.vfScrollY;
 
@@ -845,33 +873,6 @@ function createVFRestingShell() {
       }
     });
 
-    function applyFullWidthIfHome() {
-      if (!isHomePage) return;
-
-      // Compact resting state for embedded home-page Agent
-      const vfFrame = document.getElementById("voiceflow-chat-frame");
-      if (vfFrame) {
-        vfFrame.style.width = "100%";
-        vfvFrame.style.height = "480px";
-      }
-
-      const vfHost = document.getElementById("voiceflow-chat-frame");
-      const shadowRoot = vfHost?.shadowRoot;
-      if (!shadowRoot) return;
-
-      if (shadowRoot.querySelector("#vf-fullwidth-override")) return;
-
-      const style = document.createElement("style");
-      style.id = "vf-fullwidth-override";
-      style.textContent = `
-    .vfrc-chat {
-      width: 100% !important;
-      max-width: 100% !important;
-    }
-  `;
-
-      shadowRoot.appendChild(style);
-    }
 
     if (isHomePage) {
       // Attempt immediately (covers fast-load case)
