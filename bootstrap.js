@@ -334,6 +334,30 @@ body.vf-modal-open #voiceflow-chat-frame {
   box-shadow: 0 24px 70px rgba(0,0,0,0.30);
 }
 
+body.vf-modal-open #voiceflow-chat-frame {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+
+  width: min(1000px, calc(100vw - 60px)) !important;
+  height: min(680px, calc(100vh - 60px)) !important;
+
+  margin: 0 !important;
+  z-index: 9999 !important;
+
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 24px 70px rgba(0,0,0,0.30);
+}
+
+/* Tablet landscape: reserve space above Command Center for Close control */
+@media (min-width: 768px) and (max-width: 1366px) and (orientation: landscape) {
+  body.vf-modal-open #voiceflow-chat-frame {
+    top: calc(50% + 24px) !important;
+    height: min(680px, calc(100vh - 108px)) !important;
+  }
+}
 
 /* -------------------------------------------------
    Compact resting Agent shell
