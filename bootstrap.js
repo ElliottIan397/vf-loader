@@ -504,6 +504,19 @@ body.vf-modal-open #voiceflow-chat-frame {
   document.head.appendChild(style);
 }
 
+function positionVFModalClose() {
+  const closeButton = document.querySelector(".vf-modal-close");
+  const vfFrame = document.getElementById("voiceflow-chat-frame");
+
+  if (!closeButton || !vfFrame) return;
+
+  const rect = vfFrame.getBoundingClientRect();
+
+  // Anchor just above the Command Center's top-right corner
+  closeButton.style.top = `${Math.max(8, rect.top - closeButton.offsetHeight - 8)}px`;
+  closeButton.style.right = `${Math.max(8, window.innerWidth - rect.right)}px`;
+}
+
 function activateVFModal() {
   // ✅ Ensure widget is visible BEFORE freezing
   if (isHomePage && window.voiceflow?.chat) {
