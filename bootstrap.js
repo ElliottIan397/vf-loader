@@ -522,6 +522,7 @@ function positionVFModalClose() {
 
 function activateVFModal() {
   // ✅ Ensure widget is visible BEFORE freezing
+  if (isPhone) return;
   if (isHomePage && window.voiceflow?.chat) {
     window.voiceflow.chat.open();
   }
