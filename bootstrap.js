@@ -23,29 +23,17 @@ const VF_HOME_TARGET_ID = "voiceflow-chat-frame";
 const isHomePage = !!document.getElementById(VF_HOME_TARGET_ID);
 
 // -----------------------------------------------------
-// Site-specific Agent configuration
+// Resolve site-specific configuration
 // -----------------------------------------------------
-const VF_SITE_CONFIG = {
-  agentName: "Reva",
-  avatarUrl: "https://info.digitolservices.com/hubfs/Digitol/Digitol/Agent%20Reva.png",
-  accentColor: "#3498db",
-  subtitle: "Your AI Agent. Real Answers.",
+const VF_HOSTNAME = window.location.hostname
+  .toLowerCase()
+  .replace(/^www\./, "");
 
-prompts: [
-  {
-    label: "Find a product",
-    query: "Help me find a product"
-  },
-  {
-    label: "Explore our services",
-    query: "Tell me about your services"
-  },
-  {
-    label: "Get support",
-    query: "I need help or support"
-  }
-]
-};
+const VF_SITE_CONFIG = window.VF_SITES?.[VF_HOSTNAME] || null;
+
+console.log("🌐 VF HOSTNAME:", VF_HOSTNAME);
+console.log("⚙️ VF SITE CONFIG:", VF_SITE_CONFIG);
+
 
 console.log("🧪 isHomePage =", isHomePage);
 console.log("📍 VF PAGE MODE:", isHomePage ? "HOME (embedded)" : "NOT HOME (floating)");
@@ -731,77 +719,77 @@ function createVFRestingShell() {
 
   vfHost.parentNode.insertBefore(shell, vfHost);
 
-const queryInput = shell.querySelector(".vf-resting-query");
-const sendButton = shell.querySelector(".vf-resting-send");
-const promptButtons = shell.querySelectorAll(".vf-resting-prompt");
+  const queryInput = shell.querySelector(".vf-resting-query");
+  const sendButton = shell.querySelector(".vf-resting-send");
+  const promptButtons = shell.querySelectorAll(".vf-resting-prompt");
 
-function openCommandCenter(query = "") {
-  const cleanQuery = query.trim();
+  function openCommandCenter(query = "") {
+    const cleanQuery = query.trim();
 
-  shell.style.display = "none";
-  vfHost.style.display = "block";
+    shell.style.display = "none";
+    vfHost.style.display = "block";
 
-  window.__vfModalActivated = true;
-  activateVFModal();
+    window.__vfModalActivated = true;
+    activateVFModal();
 
-  // If the visitor entered a question in the resting shell,
-  // hand it directly to Voiceflow after Command Center opens.
-  if (cleanQuery) {
-    setTimeout(() => {
-      const api = window.voiceflow?.chat;
+    // If the visitor entered a question in the resting shell,
+    // hand it directly to Voiceflow after Command Center opens.
+    if (cleanQuery) {
+      setTimeout(() => {
+        const api = window.voiceflow?.chat;
 
-      if (!api || typeof api.interact !== "function") {
-        console.warn("VF API not ready for resting-shell query");
-        return;
-      }
+        if (!api || typeof api.interact !== "function") {
+          console.warn("VF API not ready for resting-shell query");
+          return;
+        }
 
-      console.log("🚀 Sending resting-shell query to Voiceflow:", cleanQuery);
+        console.log("🚀 Sending resting-shell query to Voiceflow:", cleanQuery);
 
-      api.interact({
-        type: "text",
-        payload: cleanQuery
-      });
-    }, 400);
+        api.interact({
+          type: "text",
+          payload: cleanQuery
+        });
+      }, 400);
+    }
   }
-}
 
-// Clicking into the input must NOT open Command Center
-queryInput.addEventListener("click", (e) => {
-  e.stopPropagation();
-});
+  // Clicking into the input must NOT open Command Center
+  queryInput.addEventListener("click", (e) => {
+    e.stopPropagation();
+  });
 
-// Arrow: capture query and open
-sendButton.addEventListener("click", (e) => {
-  e.stopPropagation();
-  openCommandCenter(queryInput.value);
-});
+  // Arrow: capture query and open
+  sendButton.addEventListener("click", (e) => {
+    e.stopPropagation();
+    openCommandCenter(queryInput.value);
+  });
 
-// Enter: capture query and open
-queryInput.addEventListener("keydown", (e) => {
-  if (e.key !== "Enter") return;
+  // Enter: capture query and open
+  queryInput.addEventListener("keydown", (e) => {
+    if (e.key !== "Enter") return;
 
-  e.preventDefault();
-  e.stopPropagation();
-
-  openCommandCenter(queryInput.value);
-});
-
-// Suggested prompts: open Command Center and send configured query
-promptButtons.forEach((button) => {
-  button.addEventListener("click", (e) => {
     e.preventDefault();
     e.stopPropagation();
 
-    const query = button.dataset.query || "";
-
-    openCommandCenter(query);
+    openCommandCenter(queryInput.value);
   });
-});
 
-// Clicking elsewhere on the resting card opens normally
-shell.addEventListener("click", () => {
-  openCommandCenter();
-});
+  // Suggested prompts: open Command Center and send configured query
+  promptButtons.forEach((button) => {
+    button.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const query = button.dataset.query || "";
+
+      openCommandCenter(query);
+    });
+  });
+
+  // Clicking elsewhere on the resting card opens normally
+  shell.addEventListener("click", () => {
+    openCommandCenter();
+  });
 }
 
 // -----------------------------------------------------
