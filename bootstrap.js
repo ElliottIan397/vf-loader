@@ -556,36 +556,40 @@ function activateVFModal() {
     });
 
     document.body.appendChild(closeButton);
-  }  
+
+    requestAnimationFrame(() => {
+      positionVFModalClose();
+    });
+  }
 }
 
-    function applyFullWidthIfHome() {
-      if (!isHomePage) return;
+function applyFullWidthIfHome() {
+  if (!isHomePage) return;
 
-      // Compact resting state for embedded home-page Agent
-      const vfFrame = document.getElementById("voiceflow-chat-frame");
-if (vfFrame) {
-  vfFrame.style.width = "100%";
-  vfFrame.style.height = "480px";
-}
+  // Compact resting state for embedded home-page Agent
+  const vfFrame = document.getElementById("voiceflow-chat-frame");
+  if (vfFrame) {
+    vfFrame.style.width = "100%";
+    vfFrame.style.height = "480px";
+  }
 
-      const vfHost = document.getElementById("voiceflow-chat-frame");
-      const shadowRoot = vfHost?.shadowRoot;
-      if (!shadowRoot) return;
+  const vfHost = document.getElementById("voiceflow-chat-frame");
+  const shadowRoot = vfHost?.shadowRoot;
+  if (!shadowRoot) return;
 
-      if (shadowRoot.querySelector("#vf-fullwidth-override")) return;
+  if (shadowRoot.querySelector("#vf-fullwidth-override")) return;
 
-      const style = document.createElement("style");
-      style.id = "vf-fullwidth-override";
-      style.textContent = `
+  const style = document.createElement("style");
+  style.id = "vf-fullwidth-override";
+  style.textContent = `
     .vfrc-chat {
       width: 100% !important;
       max-width: 100% !important;
     }
   `;
 
-      shadowRoot.appendChild(style);
-    }
+  shadowRoot.appendChild(style);
+}
 
 function deactivateVFModal() {
   const scrollY = document.body.dataset.vfScrollY;
@@ -600,24 +604,24 @@ function deactivateVFModal() {
     delete document.body.dataset.vfScrollY;
   }
 
-// After first engagement, keep the real Voiceflow conversation
-// visible in its normal embedded home-page position.
-if (isHomePage) {
-  const vfHost = document.getElementById(VF_HOME_TARGET_ID);
-  const shell = document.getElementById("vf-resting-shell");
+  // After first engagement, keep the real Voiceflow conversation
+  // visible in its normal embedded home-page position.
+  if (isHomePage) {
+    const vfHost = document.getElementById(VF_HOME_TARGET_ID);
+    const shell = document.getElementById("vf-resting-shell");
 
-  if (shell) {
-    shell.style.display = "none";
+    if (shell) {
+      shell.style.display = "none";
+    }
+
+    if (vfHost) {
+      vfHost.style.display = "block";
+    }
+
+    setTimeout(() => {
+      applyFullWidthIfHome();
+    }, 50);
   }
-
-  if (vfHost) {
-    vfHost.style.display = "block";
-  }
-
-  setTimeout(() => {
-    applyFullWidthIfHome();
-  }, 50);
-}
 
   // Re-enable Command Center activation for the next interaction.
   // Existing event listeners remain attached.
