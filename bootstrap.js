@@ -364,7 +364,7 @@ body.vf-modal-open #voiceflow-chat-frame {
 .vf-resting-subtitle {
   font-size: 17px;
   font-weight: 500;
-  color: #3498db;
+  color: ${VF_SITE_CONFIG.accentColor};
   margin-bottom: 14px;
 }
 
@@ -454,7 +454,7 @@ body.vf-modal-open #voiceflow-chat-frame {
   border: 0;
   border-radius: 50%;
 
-  background: #3498db;
+  background: ${VF_SITE_CONFIG.accentColor};
   color: #fff;
 
   font-size: 28px;
