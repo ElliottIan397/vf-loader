@@ -38,7 +38,11 @@ window.VF_SITES = {
       {
         label: "Get Support",
         query: "I need help or support"
-      }
+      },
+      {
+        label: "Field Service",
+        query: "Tell me about your Field Service reach and capabilities"
+      }       
     ]
   },
 
