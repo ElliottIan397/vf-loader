@@ -119,6 +119,10 @@ window.VF_SITES = {
       {
         label: "Managed IT Services",
         query: "Tell me about your managed IT services"
+      },
+      {
+        label: "Field Service",
+        query: "Tell me about your Field Service reach and capabilities"
       }
     ]
   },
