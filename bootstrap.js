@@ -1166,13 +1166,10 @@ function closeHubSpotScheduler() {
   const vfFrame = document.getElementById("voiceflow-chat-frame");
 
   if (vfFrame) {
-    vfFrame.style.visibility = "visible";
-    vfFrame.style.pointerEvents = "auto";
-    vfFrame.style.zIndex = "9999";
+    vfFrame.style.display = "block";
   }
 
   // Keep the existing Command Center active.
-  // Do NOT deactivate the modal or disturb the Voiceflow session.
   document.body.classList.add("vf-modal-open");
 
   requestAnimationFrame(() => {
