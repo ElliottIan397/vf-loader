@@ -1185,10 +1185,21 @@ function closeHubSpotScheduler() {
    ----------------------------------------------------- */
 
 window.addEventListener("message", (event) => {
-  console.log("🧪 WINDOW MESSAGE", {
-    origin: event.origin,
-    data: event.data
-  });
+  const origin = String(event.origin || "").toLowerCase();
+
+  if (
+    origin.includes("hubspot") ||
+    origin.includes("hsappstatic") ||
+    origin.includes("digitolservices")
+  ) {
+    console.log(
+      "🧪 HUBSPOT MESSAGE",
+      {
+        origin: event.origin,
+        data: event.data
+      }
+    );
+  }
 });
 
 // -----------------------------------------------------
