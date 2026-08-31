@@ -172,11 +172,15 @@ window.vfExtensions.push({
 window.vfExtensions.push({
   name: "OPEN_SCHEDULER",
   type: "effect",
+
   match: ({ trace }) =>
-    trace?.type === "custom" && trace?.payload?.name === "OPEN_SCHEDULER",
+    trace?.type === "custom" &&
+    trace?.payload?.name === "OPEN_SCHEDULER",
+
   effect: ({ trace }) => {
     const email = trace?.payload?.payload?.email || "";
-    window.parent.postMessage({ type: "OPEN_SCHEDULER", email }, "*");
+
+    openHubSpotScheduler(email);
   },
 });
 
@@ -909,6 +913,284 @@ function createVFRestingShell() {
     openCommandCenter();
   });
 }
+
+/* =====================================================
+   HUBSPOT MEETINGS — COMMAND CENTER SCHEDULER
+   Phase 1: Inline scheduler + diagnostic event logging
+   ===================================================== */
+
+const VF_HUBSPOT_MEETING_URL =
+  "https://info.digitolservices.com/meetings/ianelliott30?embed=true";
+
+function injectVFSchedulerCSS() {
+  if (document.getElementById("vf-scheduler-css")) return;
+
+  const style = document.createElement("style");
+  style.id = "vf-scheduler-css";
+
+  style.textContent = `
+    #vf-scheduler-panel {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+
+      width: min(1000px, calc(100vw - 60px));
+      height: min(680px, calc(100vh - 60px));
+
+      z-index: 10000;
+
+      display: flex;
+      flex-direction: column;
+
+      background: #fff;
+      border-radius: 16px;
+      overflow: hidden;
+
+      box-shadow: 0 24px 70px rgba(0,0,0,0.30);
+    }
+
+    .vf-scheduler-header {
+      flex: 0 0 auto;
+
+      display: flex;
+      align-items: center;
+      gap: 22px;
+
+      padding: 18px 24px;
+
+      background: #fff;
+      border-bottom: 1px solid #e5e5e5;
+    }
+
+    .vf-scheduler-back {
+      flex: 0 0 auto;
+
+      padding: 9px 14px;
+
+      border: 1px solid #d5d5d5;
+      border-radius: 20px;
+
+      background: #fff;
+      color: #333;
+
+      font-size: 14px;
+      font-weight: 500;
+
+      cursor: pointer;
+    }
+
+    .vf-scheduler-back:hover {
+      background: #f5f5f5;
+    }
+
+    .vf-scheduler-heading {
+      min-width: 0;
+    }
+
+    .vf-scheduler-title {
+      margin: 0 0 3px;
+
+      font-size: 20px;
+      line-height: 1.2;
+      font-weight: 600;
+
+      color: #222;
+    }
+
+    .vf-scheduler-subtitle {
+      margin: 0;
+
+      font-size: 14px;
+      line-height: 1.35;
+
+      color: #666;
+    }
+
+    .vf-scheduler-body {
+      flex: 1 1 auto;
+      min-height: 0;
+
+      overflow-y: auto;
+      background: #fff;
+    }
+
+    .vf-scheduler-body .meetings-iframe-container {
+      width: 100%;
+      min-height: 100%;
+    }
+
+    .vf-scheduler-body iframe {
+      width: 100% !important;
+      min-height: 580px !important;
+      border: 0 !important;
+    }
+
+    body.vf-scheduler-open #voiceflow-chat-frame {
+      visibility: hidden !important;
+      pointer-events: none !important;
+    }
+
+    /* Match existing Command Center tablet treatment */
+    @media (min-width: 768px) and (max-width: 1366px) and (orientation: landscape) {
+      #vf-scheduler-panel {
+        top: calc(50% + 24px);
+        height: min(680px, calc(100vh - 108px));
+      }
+    }
+  `;
+
+  document.head.appendChild(style);
+}
+
+
+function loadHubSpotMeetingsScript() {
+  return new Promise((resolve, reject) => {
+    if (window.__vfHubSpotMeetingsLoaded) {
+      resolve();
+      return;
+    }
+
+    const existing = document.querySelector(
+      'script[src="https://static.hsappstatic.net/MeetingsEmbed/ex/MeetingsEmbedCode.js"]'
+    );
+
+    if (existing) {
+      window.__vfHubSpotMeetingsLoaded = true;
+      resolve();
+      return;
+    }
+
+    const script = document.createElement("script");
+
+    script.src =
+      "https://static.hsappstatic.net/MeetingsEmbed/ex/MeetingsEmbedCode.js";
+
+    script.type = "text/javascript";
+    script.async = true;
+
+    script.onload = () => {
+      console.log("📅 HubSpot Meetings embed loaded");
+      window.__vfHubSpotMeetingsLoaded = true;
+      resolve();
+    };
+
+    script.onerror = (err) => {
+      console.error("❌ HubSpot Meetings embed failed to load", err);
+      reject(err);
+    };
+
+    document.head.appendChild(script);
+  });
+}
+
+
+async function openHubSpotScheduler(email = "") {
+  if (isPhone) {
+    console.warn("📅 Scheduler Command Center disabled on phone");
+    return;
+  }
+
+  console.log("📅 Opening HubSpot scheduler", { email });
+
+  injectVFSchedulerCSS();
+
+  // Ensure the normal Command Center/modal environment exists.
+  if (!document.body.classList.contains("vf-modal-open")) {
+    window.__vfModalActivated = true;
+    activateVFModal();
+  }
+
+  // Avoid duplicate scheduler panels.
+  document.getElementById("vf-scheduler-panel")?.remove();
+
+  const panel = document.createElement("div");
+  panel.id = "vf-scheduler-panel";
+
+  panel.innerHTML = `
+    <div class="vf-scheduler-header">
+
+      <button
+        type="button"
+        class="vf-scheduler-back"
+        aria-label="Back to conversation"
+      >
+        &#8592; Back to conversation
+      </button>
+
+      <div class="vf-scheduler-heading">
+        <div class="vf-scheduler-title">
+          Schedule Your Facility Assessment
+        </div>
+
+        <div class="vf-scheduler-subtitle">
+          Choose a convenient time below.
+        </div>
+      </div>
+
+    </div>
+
+    <div class="vf-scheduler-body">
+
+      <div
+        class="meetings-iframe-container"
+        data-src="${VF_HUBSPOT_MEETING_URL}">
+      </div>
+
+    </div>
+  `;
+
+  panel
+    .querySelector(".vf-scheduler-back")
+    .addEventListener("click", () => {
+      closeHubSpotScheduler();
+    });
+
+  document.body.appendChild(panel);
+  document.body.classList.add("vf-scheduler-open");
+
+  try {
+    await loadHubSpotMeetingsScript();
+  } catch (err) {
+    console.error("Unable to initialize HubSpot scheduler", err);
+  }
+}
+
+
+function closeHubSpotScheduler() {
+  console.log("📅 Closing HubSpot scheduler");
+
+  document.body.classList.remove("vf-scheduler-open");
+  document.getElementById("vf-scheduler-panel")?.remove();
+
+  // Voiceflow was never destroyed or reloaded.
+  // It simply becomes visible again.
+}
+
+
+/* -----------------------------------------------------
+   HUBSPOT MESSAGE DIAGNOSTIC
+   Temporary — Phase 1 only
+   ----------------------------------------------------- */
+
+window.addEventListener("message", (event) => {
+  const origin = String(event.origin || "").toLowerCase();
+
+  // Diagnostic logging only for HubSpot-related origins.
+  if (
+    origin.includes("hubspot") ||
+    origin.includes("hsappstatic") ||
+    origin.includes("digitolservices")
+  ) {
+    console.log(
+      "🧪 HUBSPOT MESSAGE",
+      {
+        origin: event.origin,
+        data: event.data
+      }
+    );
+  }
+});
 
 // -----------------------------------------------------
 // 3. Load Voiceflow widget (ONCE)
