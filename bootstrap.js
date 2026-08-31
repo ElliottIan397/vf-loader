@@ -174,13 +174,11 @@ window.vfExtensions.push({
   type: "effect",
 
   match: ({ trace }) =>
-    trace?.type === "custom" &&
+    trace?.type === "OPEN_SCHEDULER" ||
     trace?.payload?.name === "OPEN_SCHEDULER",
 
   effect: ({ trace }) => {
-    const email = trace?.payload?.payload?.email || "";
-
-    openHubSpotScheduler(email);
+    openHubSpotScheduler();
   },
 });
 
