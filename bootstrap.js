@@ -178,6 +178,21 @@ window.vfExtensions.push({
     trace?.payload?.name === "OPEN_SCHEDULER",
 
   effect: ({ trace }) => {
+    const discoverySummary =
+      trace?.payload?.discovery_summary || "";
+
+    if (discoverySummary) {
+      sessionStorage.setItem(
+        "apollo_discovery_summary",
+        discoverySummary
+      );
+
+      console.log(
+        "📝 Apollo discovery summary captured",
+        discoverySummary
+      );
+    }
+
     openHubSpotScheduler();
   },
 });
