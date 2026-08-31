@@ -1163,10 +1163,24 @@ function closeHubSpotScheduler() {
   document.body.classList.remove("vf-scheduler-open");
   document.getElementById("vf-scheduler-panel")?.remove();
 
-  // Voiceflow was never destroyed or reloaded.
-  // It simply becomes visible again.
-}
+  const vfFrame = document.getElementById("voiceflow-chat-frame");
 
+  if (vfFrame) {
+    vfFrame.style.visibility = "visible";
+    vfFrame.style.pointerEvents = "auto";
+    vfFrame.style.zIndex = "9999";
+  }
+
+  // Keep the existing Command Center active.
+  // Do NOT deactivate the modal or disturb the Voiceflow session.
+  document.body.classList.add("vf-modal-open");
+
+  requestAnimationFrame(() => {
+    positionVFModalClose();
+  });
+
+  console.log("💬 Returned to Voiceflow conversation");
+}
 
 /* -----------------------------------------------------
    HUBSPOT MESSAGE DIAGNOSTIC
