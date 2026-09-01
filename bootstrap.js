@@ -1193,13 +1193,13 @@ injectVFSchedulerCSS();
       </button>
 
       <div class="vf-scheduler-heading">
-        <div class="vf-scheduler-title">
-          Schedule Your Facility Assessment
-        </div>
+         <div class="vf-scheduler-title">
+           Schedule a 30-Minute Discovery Call
+         </div>
 
-        <div class="vf-scheduler-subtitle">
-          Choose a convenient time below.
-        </div>
+         <div class="vf-scheduler-subtitle">
+           Choose a convenient time to discuss your requirements with our team.
+         </div>
       </div>
 
     </div>
