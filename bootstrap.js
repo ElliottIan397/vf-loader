@@ -933,7 +933,7 @@ function createVFRestingShell() {
    ===================================================== */
 
 const VF_HUBSPOT_MEETING_URL =
-  "https://info.digitolservices.com/meetings/ianelliott30?embed=true&apollo_ai_handoff_id=TEST12345";
+  "https://info.digitolservices.com/meetings/ianelliott30?embed=true&utm_campaign=TEST12345&utm_source=apollo_ai&utm_medium=voiceflow";
 
 function injectVFSchedulerCSS() {
   if (document.getElementById("vf-scheduler-css")) return;
