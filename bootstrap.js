@@ -177,23 +177,26 @@ window.vfExtensions.push({
     trace?.type === "OPEN_SCHEDULER" ||
     trace?.payload?.name === "OPEN_SCHEDULER",
 
-  effect: ({ trace }) => {
+  effect: async ({ trace }) => {
     const discoverySummary =
       trace?.payload?.discovery_summary || "";
 
-    if (discoverySummary) {
-      sessionStorage.setItem(
-        "apollo_discovery_summary",
-        discoverySummary
-      );
-
-      console.log(
-        "📝 Apollo discovery summary captured",
-        discoverySummary
-      );
+    if (!discoverySummary) {
+      console.error("❌ Apollo discovery summary missing");
+      return;
     }
 
-    // Generate a unique ID for this Voiceflow → HubSpot handoff
+    sessionStorage.setItem(
+      "apollo_discovery_summary",
+      discoverySummary
+    );
+
+    console.log(
+      "📝 Apollo discovery summary captured",
+      discoverySummary
+    );
+
+    // Generate unique Voiceflow → HubSpot correlation ID
     const handoffId = crypto.randomUUID();
 
     sessionStorage.setItem(
@@ -206,7 +209,42 @@ window.vfExtensions.push({
       handoffId
     );
 
-    openHubSpotScheduler(handoffId);
+    // Persist UUID + discovery summary BEFORE opening HubSpot
+    try {
+      const response = await fetch(
+        "https://vf-nc-gateway.onrender.com/vf/handoff",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            handoff_id: handoffId,
+            discovery_summary: discoverySummary
+          })
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          `Handoff storage failed: ${response.status}`
+        );
+      }
+
+      console.log(
+        "✅ Apollo discovery handoff stored",
+        handoffId
+      );
+
+      // Only open scheduler AFTER persistence succeeds
+      openHubSpotScheduler(handoffId);
+
+    } catch (err) {
+      console.error(
+        "❌ Apollo discovery handoff could not be stored",
+        err
+      );
+    }
   },
 });
 
