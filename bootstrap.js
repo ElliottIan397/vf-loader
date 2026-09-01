@@ -193,7 +193,20 @@ window.vfExtensions.push({
       );
     }
 
-    openHubSpotScheduler();
+    // Generate a unique ID for this Voiceflow → HubSpot handoff
+    const handoffId = crypto.randomUUID();
+
+    sessionStorage.setItem(
+      "apollo_ai_handoff_id",
+      handoffId
+    );
+
+    console.log(
+      "🔗 Apollo AI handoff ID generated",
+      handoffId
+    );
+
+    openHubSpotScheduler(handoffId);
   },
 });
 
@@ -933,7 +946,7 @@ function createVFRestingShell() {
    ===================================================== */
 
 const VF_HUBSPOT_MEETING_URL =
-  "https://info.digitolservices.com/meetings/ianelliott30?embed=true&utm_campaign=TEST12345&utm_source=apollo_ai&utm_medium=voiceflow";
+  "https://info.digitolservices.com/meetings/ianelliott30";
 
 function injectVFSchedulerCSS() {
   if (document.getElementById("vf-scheduler-css")) return;
@@ -1098,15 +1111,25 @@ function loadHubSpotMeetingsScript() {
 }
 
 
-async function openHubSpotScheduler(email = "") {
+async function openHubSpotScheduler(handoffId = "") {
   if (isPhone) {
     console.warn("📅 Scheduler Command Center disabled on phone");
     return;
   }
 
-  console.log("📅 Opening HubSpot scheduler", { email });
+const meetingUrl =
+  VF_HUBSPOT_MEETING_URL +
+  "?embed=true" +
+  "&utm_campaign=" + encodeURIComponent(handoffId) +
+  "&utm_source=apollo_ai" +
+  "&utm_medium=voiceflow";
 
-  injectVFSchedulerCSS();
+console.log("📅 Opening HubSpot scheduler", {
+  handoffId,
+  meetingUrl
+});
+
+injectVFSchedulerCSS();
 
   // Ensure the normal Command Center/modal environment exists.
   if (!document.body.classList.contains("vf-modal-open")) {
@@ -1147,7 +1170,7 @@ async function openHubSpotScheduler(email = "") {
 
       <div
         class="meetings-iframe-container"
-        data-src="${VF_HUBSPOT_MEETING_URL}">
+        data-src="${meetingUrl}">
       </div>
 
     </div>
