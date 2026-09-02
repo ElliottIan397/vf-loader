@@ -266,10 +266,10 @@ window.vfExtensions.push({
     }
 
     console.log("🎬 OPEN_VIDEO received:", videoId);
+
+    openApprovedVideo(videoId);
   },
 });
-
-console.log("✅ VF EXTENSIONS REGISTERED", window.vfExtensions);
 
 /* ---------- DEAD CODE NOT REQUIRED ---------- */
 /*function forceLogoutOnNewChat() {
@@ -997,6 +997,231 @@ function createVFRestingShell() {
   shell.addEventListener("click", () => {
     openCommandCenter();
   });
+}
+
+/* =====================================================
+   APPROVED VIDEOS — COMMAND CENTER
+   POC: Controlled video library
+   ===================================================== */
+
+const VF_APPROVED_VIDEOS = {
+  "pudu-gt7-golf": {
+    title: "PUDU GT7 — Golf Course Application",
+    url: "https://cdn.pudutech.com/PUDU_GT_7_EN_1080_P_24d21e241a.mp4"
+  }
+};
+
+function injectVFVideoCSS() {
+  if (document.getElementById("vf-video-css")) return;
+
+  const style = document.createElement("style");
+  style.id = "vf-video-css";
+
+  style.textContent = `
+    #vf-video-panel {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+
+      width: min(1000px, calc(100vw - 60px));
+      height: min(680px, calc(100vh - 60px));
+
+      z-index: 10000;
+
+      display: flex;
+      flex-direction: column;
+
+      background: #fff;
+      border-radius: 16px;
+      overflow: hidden;
+
+      box-shadow: 0 24px 70px rgba(0,0,0,0.30);
+    }
+
+    .vf-video-header {
+      flex: 0 0 auto;
+
+      display: flex;
+      align-items: center;
+      gap: 22px;
+
+      padding: 18px 24px;
+
+      background: #fff;
+      border-bottom: 1px solid #e5e5e5;
+    }
+
+    .vf-video-back {
+      flex: 0 0 auto;
+
+      padding: 9px 14px;
+
+      border: 1px solid #d5d5d5;
+      border-radius: 20px;
+
+      background: #fff;
+      color: #333;
+
+      font-size: 14px;
+      font-weight: 500;
+
+      cursor: pointer;
+    }
+
+    .vf-video-back:hover {
+      background: #f5f5f5;
+    }
+
+    .vf-video-title {
+      margin: 0;
+
+      font-size: 20px;
+      line-height: 1.2;
+      font-weight: 600;
+
+      color: #222;
+    }
+
+    .vf-video-body {
+      flex: 1 1 auto;
+      min-height: 0;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      padding: 20px;
+
+      background: #111;
+    }
+
+    .vf-video-player {
+      width: 100%;
+      height: 100%;
+      max-width: 100%;
+      max-height: 100%;
+
+      object-fit: contain;
+      background: #000;
+    }
+
+    body.vf-video-open #voiceflow-chat-frame {
+      visibility: hidden !important;
+      pointer-events: none !important;
+    }
+
+    @media (min-width: 768px) and (max-width: 1366px) and (orientation: landscape) {
+      #vf-video-panel {
+        top: calc(50% + 24px);
+        height: min(680px, calc(100vh - 108px));
+      }
+    }
+  `;
+
+  document.head.appendChild(style);
+}
+
+function openApprovedVideo(videoId) {
+  if (isPhone) {
+    console.warn("🎬 Video Command Center disabled on phone");
+    return;
+  }
+
+  const video = VF_APPROVED_VIDEOS[videoId];
+
+  if (!video) {
+    console.error("❌ Unknown or unapproved video ID:", videoId);
+    return;
+  }
+
+  console.log("🎬 Opening approved video:", videoId);
+
+  injectVFVideoCSS();
+
+  // Ensure existing Command Center/modal environment is active.
+  if (!document.body.classList.contains("vf-modal-open")) {
+    window.__vfModalActivated = true;
+    activateVFModal();
+  }
+
+  // Avoid duplicate video panels.
+  document.getElementById("vf-video-panel")?.remove();
+
+  const panel = document.createElement("div");
+  panel.id = "vf-video-panel";
+
+  panel.innerHTML = `
+    <div class="vf-video-header">
+
+      <button
+        type="button"
+        class="vf-video-back"
+        aria-label="Back to conversation"
+      >
+        &#8592; Back to conversation
+      </button>
+
+      <div class="vf-video-title">
+        ${video.title}
+      </div>
+
+    </div>
+
+    <div class="vf-video-body">
+      <video
+        class="vf-video-player"
+        controls
+        playsinline
+        preload="metadata"
+      >
+        <source src="${video.url}" type="video/mp4">
+        Your browser does not support video playback.
+      </video>
+    </div>
+  `;
+
+  panel
+    .querySelector(".vf-video-back")
+    .addEventListener("click", () => {
+      closeApprovedVideo();
+    });
+
+  document.body.appendChild(panel);
+  document.body.classList.add("vf-video-open");
+}
+
+
+function closeApprovedVideo() {
+  console.log("🎬 Closing approved video");
+
+  // Stop playback before removing the player.
+  const player = document.querySelector(
+    "#vf-video-panel .vf-video-player"
+  );
+
+  if (player) {
+    player.pause();
+    player.currentTime = 0;
+  }
+
+  document.body.classList.remove("vf-video-open");
+  document.getElementById("vf-video-panel")?.remove();
+
+  const vfFrame = document.getElementById("voiceflow-chat-frame");
+
+  if (vfFrame) {
+    vfFrame.style.display = "block";
+  }
+
+  // Return to the existing Command Center conversation.
+  document.body.classList.add("vf-modal-open");
+
+  requestAnimationFrame(() => {
+    positionVFModalClose();
+  });
+
+  console.log("💬 Returned to Voiceflow conversation");
 }
 
 /* =====================================================
