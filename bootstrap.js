@@ -1172,8 +1172,9 @@ function openApprovedVideo(videoId) {
       <video
         class="vf-video-player"
         controls
+        autoplay
         playsinline
-        preload="metadata"
+        preload="auto"
       >
         <source src="${video.url}" type="video/mp4">
         Your browser does not support video playback.
