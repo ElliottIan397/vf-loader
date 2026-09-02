@@ -248,6 +248,27 @@ window.vfExtensions.push({
   },
 });
 
+/* ---------- OPEN VIDEO EFFECT ---------- */
+window.vfExtensions.push({
+  name: "OPEN_VIDEO",
+  type: "effect",
+
+  match: ({ trace }) =>
+    trace?.type === "OPEN_VIDEO" ||
+    trace?.payload?.name === "OPEN_VIDEO",
+
+  effect: async ({ trace }) => {
+    const videoId = trace?.payload?.video_id || "";
+
+    if (!videoId) {
+      console.error("❌ Approved video ID missing");
+      return;
+    }
+
+    console.log("🎬 OPEN_VIDEO received:", videoId);
+  },
+});
+
 console.log("✅ VF EXTENSIONS REGISTERED", window.vfExtensions);
 
 /* ---------- DEAD CODE NOT REQUIRED ---------- */
