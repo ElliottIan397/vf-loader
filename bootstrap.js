@@ -271,6 +271,28 @@ window.vfExtensions.push({
   },
 });
 
+/* ---------- UPDATE MODEL EFFECT ---------- */
+window.vfExtensions.push({
+  name: "UPDATE_MODEL",
+  type: "effect",
+
+  match: ({ trace }) =>
+    trace?.type === "UPDATE_MODEL" ||
+    trace?.payload?.name === "UPDATE_MODEL",
+
+  effect: async ({ trace }) => {
+    console.log("📊 UPDATE_MODEL received:", trace);
+
+    const payload =
+      trace?.payload?.payload ||
+      trace?.payload ||
+      {};
+
+    updateDigitolModel(payload);
+  },
+});
+
+
 /* ---------- DEAD CODE NOT REQUIRED ---------- */
 /*function forceLogoutOnNewChat() {
   if (!window.voiceflow?.chat) return;
@@ -1528,6 +1550,46 @@ window.addEventListener("message", (event) => {
    POC — Google Search
    ===================================================== */
 
+function updateDigitolModel(data) {
+  const model = document.getElementById("digitol-model");
+
+  if (!model) {
+    console.warn("📊 No Digitol model container found");
+    return;
+  }
+
+  if (model.dataset.model !== "google-search") {
+    console.warn("📊 UPDATE_MODEL ignored — wrong model");
+    return;
+  }
+
+  const projectedTraffic =
+    document.getElementById("digitol-projected-traffic");
+
+  const trafficChange =
+    document.getElementById("digitol-traffic-change");
+
+  const noClick =
+    document.getElementById("digitol-no-click");
+
+  if (projectedTraffic && data.projected_traffic !== undefined) {
+    projectedTraffic.textContent =
+      Number(data.projected_traffic).toLocaleString();
+  }
+
+  if (trafficChange && data.traffic_change !== undefined) {
+    trafficChange.textContent =
+      `${data.traffic_change}%`;
+  }
+
+  if (noClick && data.no_click_rate !== undefined) {
+    noClick.textContent =
+      `${data.no_click_rate}%`;
+  }
+
+  console.log("✅ Digitol model updated:", data);
+}
+
 function initDigitolModelPOC() {
   const model = document.getElementById("digitol-model");
 
@@ -1588,14 +1650,15 @@ function initDigitolModelPOC() {
             Projected Traffic
           </div>
 
-          <div style="
-            font-size:32px;
-            font-weight:700;
-            color:#263238;
-          ">
-            6,420
-          </div>
-        </div>
+         <div
+           id="digitol-projected-traffic"
+           style="
+             font-size:32px;
+             font-weight:700;
+             color:#263238;
+           ">
+           6,420
+         </div>
 
         <div style="
           flex:1;
@@ -1608,15 +1671,16 @@ function initDigitolModelPOC() {
             Traffic Change
           </div>
 
-          <div style="
-            font-size:32px;
-            font-weight:700;
-            color:#263238;
-          ">
-            -35.8%
-          </div>
-        </div>
-
+         <div
+           id="digitol-traffic-change"
+           style="
+             font-size:32px;
+             font-weight:700;
+             color:#263238;
+           ">
+           -35.8%
+         </div>
+         
         <div style="
           flex:1;
           min-width:180px;
@@ -1628,14 +1692,15 @@ function initDigitolModelPOC() {
             No-Click Search
           </div>
 
-          <div style="
-            font-size:32px;
-            font-weight:700;
-            color:#263238;
-          ">
-            70%
-          </div>
-        </div>
+         <div
+           id="digitol-no-click"
+           style="
+             font-size:32px;
+             font-weight:700;
+             color:#263238;
+           ">
+           70%
+         </div>
 
       </div>
 
