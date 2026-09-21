@@ -1523,6 +1523,138 @@ window.addEventListener("message", (event) => {
   }
 });
 
+/* =====================================================
+   DIGITOL INTERACTIVE MODELS
+   POC — Google Search
+   ===================================================== */
+
+function initDigitolModelPOC() {
+  const model = document.getElementById("digitol-model");
+
+  if (!model) return;
+
+  const modelKey = model.dataset.model;
+
+  console.log("📊 Digitol model detected:", modelKey);
+
+  if (modelKey !== "google-search") return;
+
+  const results = document.getElementById("digitol-model-results");
+
+  if (!results) return;
+
+  results.innerHTML = `
+    <div style="
+      padding:32px;
+      border:1px solid #e3e7ea;
+      border-radius:16px;
+      background:#ffffff;
+      box-shadow:0 8px 28px rgba(0,0,0,0.08);
+      font-family:Roboto,Arial,sans-serif;
+    ">
+
+      <div style="
+        font-size:13px;
+        font-weight:600;
+        color:#0096c7;
+        text-transform:uppercase;
+        letter-spacing:1px;
+        margin-bottom:8px;
+      ">
+        Digitol Interactive Model
+      </div>
+
+      <h2 style="
+        margin:0 0 24px;
+        color:#263238;
+      ">
+        Google Search vs. AI Search
+      </h2>
+
+      <div style="
+        display:flex;
+        gap:20px;
+        flex-wrap:wrap;
+      ">
+
+        <div style="
+          flex:1;
+          min-width:180px;
+          padding:20px;
+          background:#f6f8fa;
+          border-radius:12px;
+        ">
+          <div style="font-size:13px;color:#666;">
+            Projected Traffic
+          </div>
+
+          <div style="
+            font-size:32px;
+            font-weight:700;
+            color:#263238;
+          ">
+            6,420
+          </div>
+        </div>
+
+        <div style="
+          flex:1;
+          min-width:180px;
+          padding:20px;
+          background:#f6f8fa;
+          border-radius:12px;
+        ">
+          <div style="font-size:13px;color:#666;">
+            Traffic Change
+          </div>
+
+          <div style="
+            font-size:32px;
+            font-weight:700;
+            color:#263238;
+          ">
+            -35.8%
+          </div>
+        </div>
+
+        <div style="
+          flex:1;
+          min-width:180px;
+          padding:20px;
+          background:#f6f8fa;
+          border-radius:12px;
+        ">
+          <div style="font-size:13px;color:#666;">
+            No-Click Search
+          </div>
+
+          <div style="
+            font-size:32px;
+            font-weight:700;
+            color:#263238;
+          ">
+            70%
+          </div>
+        </div>
+
+      </div>
+
+      <div style="
+        margin-top:24px;
+        padding:14px 18px;
+        background:#263238;
+        color:#fff;
+        border-radius:10px;
+      ">
+        ✓ Interactive model connected successfully
+      </div>
+
+    </div>
+  `;
+}
+
+document.addEventListener("DOMContentLoaded", initDigitolModelPOC);
+
 // -----------------------------------------------------
 // 3. Load Voiceflow widget (ONCE)
 // -----------------------------------------------------
