@@ -61,7 +61,8 @@
 
       window.__digitolGoogleSearchModel = modelData;
 
-      renderGoogleSearchStage1(modelData);
+            renderGoogleSearchStage1(modelData);
+            renderGoogleSearchStage2(modelData);
 
     } catch (err) {
       console.error(
@@ -134,8 +135,40 @@
           </div>
         </div>
 
+        <div id="digitol-google-search-stage2" style="
+          margin-top:28px;
+          padding-top:28px;
+          border-top:1px solid #e3e7ea;
+        ">
+          <div style="
+            font-size:13px;
+            font-weight:600;
+            color:#0096c7;
+            text-transform:uppercase;
+            letter-spacing:1px;
+            margin-bottom:8px;
+          ">
+            Organic Traffic Distribution
+          </div>
+
+          <h3 style="
+            margin:0 0 8px;
+            color:#263238;
+          ">
+            What This Means for a Website Like Yours
+          </h3>
+
+          <div id="digitol-stage2-content" style="
+            color:#66757f;
+            font-size:15px;
+            line-height:1.5;
+          ">
+            Loading organic traffic model...
+          </div>
+        </div>
+
       </div>
-  `;
+    `;
 
   // Load the default model immediately on page open.
   // Alex can later replace this with the visitor's actual DA.
@@ -264,7 +297,33 @@
     console.log("✅ Google Search Stage 1 rendered");
   }
 
-
+   function renderGoogleSearchStage2(modelData) {
+     const content = document.getElementById("digitol-stage2-content");
+   
+     if (!content || !modelData?.stage2?.series) return;
+   
+     const series = modelData.stage2.series;
+   
+     content.innerHTML = `
+       <div>
+         Domain Authority:
+         <strong>${modelData.domain_authority}</strong>
+         &nbsp;|&nbsp;
+         DA Band:
+         <strong>${modelData.da_band}</strong>
+         &nbsp;|&nbsp;
+         Model Years:
+         <strong>${series[0].year}–${series[series.length - 1].year}</strong>
+       </div>
+     `;
+   
+     console.log(
+       "✅ Google Search Stage 2 loaded:",
+       modelData.da_band,
+       series
+     );
+   }
+   
   // Expose only the functions bootstrap.js needs.
   window.DigitolGoogleSearchModel = {
     init: initGoogleSearchModel,
