@@ -1550,7 +1550,7 @@ window.addEventListener("message", (event) => {
    POC — Google Search
    ===================================================== */
 
-function updateDigitolModel(data) {
+async function updateDigitolModel(data) {
   const model = document.getElementById("digitol-model");
 
   if (!model) {
@@ -1563,31 +1563,53 @@ function updateDigitolModel(data) {
     return;
   }
 
-  const projectedTraffic =
-    document.getElementById("digitol-projected-traffic");
+  const domainAuthority = Number(data.domain_authority);
 
-  const trafficChange =
-    document.getElementById("digitol-traffic-change");
-
-  const noClick =
-    document.getElementById("digitol-no-click");
-
-  if (projectedTraffic && data.projected_traffic !== undefined) {
-    projectedTraffic.textContent =
-      Number(data.projected_traffic).toLocaleString();
+  if (
+    !Number.isFinite(domainAuthority) ||
+    domainAuthority < 0 ||
+    domainAuthority > 100
+  ) {
+    console.error(
+      "❌ Invalid Domain Authority received:",
+      data.domain_authority
+    );
+    return;
   }
 
-  if (trafficChange && data.traffic_change !== undefined) {
-    trafficChange.textContent =
-      `${data.traffic_change}%`;
-  }
+  console.log(
+    "📊 Loading production Google Search Model for DA:",
+    domainAuthority
+  );
 
-  if (noClick && data.no_click_rate !== undefined) {
-    noClick.textContent =
-      `${data.no_click_rate}%`;
-  }
+  try {
+    const response = await fetch(
+      "https://models.digitolservices.com/models/google-search" +
+      "?domain_authority=" +
+      encodeURIComponent(domainAuthority)
+    );
 
-  console.log("✅ Digitol model updated:", data);
+    if (!response.ok) {
+      throw new Error(
+        `Google Search Model API returned ${response.status}`
+      );
+    }
+
+    const modelData = await response.json();
+
+    console.log(
+      "✅ Production Google Search Model loaded:",
+      modelData
+    );
+
+    window.__digitolGoogleSearchModel = modelData;
+
+  } catch (err) {
+    console.error(
+      "❌ Google Search Model could not be loaded:",
+      err
+    );
+  }
 }
 
 function initDigitolModelPOC() {
