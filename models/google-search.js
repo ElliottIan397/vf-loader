@@ -135,9 +135,14 @@
         </div>
 
       </div>
-    `;
-  }
+  `;
 
+  // Load the default model immediately on page open.
+  // Alex can later replace this with the visitor's actual DA.
+  updateGoogleSearchModel({
+    domain_authority: 24
+  });
+}
 
   function renderGoogleSearchStage1(modelData) {
     const content = document.getElementById("digitol-stage1-content");
