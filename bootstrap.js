@@ -1604,6 +1604,8 @@ async function updateDigitolModel(data) {
 
     window.__digitolGoogleSearchModel = modelData;
 
+     renderGoogleSearchStage1(modelData);
+
   } catch (err) {
     console.error(
       "❌ Google Search Model could not be loaded:",
@@ -1628,7 +1630,7 @@ function initDigitolModelPOC() {
   if (!results) return;
 
   results.innerHTML = `
-    <div style="
+    <div id="digitol-google-search-stage1" style="
       padding:32px;
       border:1px solid #e3e7ea;
       border-radius:16px;
@@ -1649,95 +1651,155 @@ function initDigitolModelPOC() {
       </div>
 
       <h2 style="
-        margin:0 0 24px;
+        margin:0 0 8px;
         color:#263238;
       ">
-        Google Search vs. AI Search
+        Google Search vs. AI Ask & Answer
       </h2>
 
       <div style="
-        display:flex;
-        gap:20px;
-        flex-wrap:wrap;
+        color:#66757f;
+        font-size:15px;
+        line-height:1.5;
+        margin-bottom:28px;
       ">
-
-        <div style="
-          flex:1;
-          min-width:180px;
-          padding:20px;
-          background:#f6f8fa;
-          border-radius:12px;
-        ">
-          <div style="font-size:13px;color:#666;">
-            Projected Traffic
-          </div>
-
-         <div
-           id="digitol-projected-traffic"
-           style="
-             font-size:32px;
-             font-weight:700;
-             color:#263238;
-           ">
-           6,420
-         </div>
-
-        <div style="
-          flex:1;
-          min-width:180px;
-          padding:20px;
-          background:#f6f8fa;
-          border-radius:12px;
-        ">
-          <div style="font-size:13px;color:#666;">
-            Traffic Change
-          </div>
-
-         <div
-           id="digitol-traffic-change"
-           style="
-             font-size:32px;
-             font-weight:700;
-             color:#263238;
-           ">
-           -35.8%
-         </div>
-         
-        <div style="
-          flex:1;
-          min-width:180px;
-          padding:20px;
-          background:#f6f8fa;
-          border-radius:12px;
-        ">
-          <div style="font-size:13px;color:#666;">
-            No-Click Search
-          </div>
-
-         <div
-           id="digitol-no-click"
-           style="
-             font-size:32px;
-             font-weight:700;
-             color:#263238;
-           ">
-           70%
-         </div>
-
+        Ask Alex to run the model using your website's Domain Authority.
       </div>
 
-      <div style="
-        margin-top:24px;
-        padding:14px 18px;
-        background:#263238;
-        color:#fff;
-        border-radius:10px;
-      ">
-        ✓ Interactive model connected successfully
+      <div id="digitol-stage1-content">
+        <div style="
+          padding:30px;
+          text-align:center;
+          background:#f6f8fa;
+          border-radius:12px;
+          color:#66757f;
+        ">
+          Waiting for model results...
+        </div>
       </div>
 
     </div>
   `;
+}
+
+function renderGoogleSearchStage1(modelData) {
+  const content = document.getElementById("digitol-stage1-content");
+
+  if (!content || !modelData?.stage1) return;
+
+  const stage1 = modelData.stage1;
+  const time = stage1.time;
+  const traffic = stage1.traffic;
+
+  const billions = (value) =>
+    `${(Number(value) / 1000000000).toFixed(2)}B`;
+
+  const minutes = (value) =>
+    Number(value).toFixed(2);
+
+  const percent = (value) =>
+    `${(Number(value) * 100).toFixed(0)}%`;
+
+  content.innerHTML = `
+    <div style="
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:20px;
+    ">
+
+      <div style="
+        padding:24px;
+        background:#f6f8fa;
+        border-radius:14px;
+      ">
+        <div style="
+          font-size:13px;
+          font-weight:600;
+          text-transform:uppercase;
+          letter-spacing:.8px;
+          color:#66757f;
+          margin-bottom:18px;
+        ">
+          Legacy Google Search
+        </div>
+
+        <div style="margin-bottom:18px;">
+          <div style="font-size:13px;color:#66757f;">
+            Time per Search
+          </div>
+          <div style="font-size:30px;font-weight:700;color:#263238;">
+            ${minutes(time.legacy_minutes_per_search)} min
+          </div>
+        </div>
+
+        <div style="margin-bottom:18px;">
+          <div style="font-size:13px;color:#66757f;">
+            No-Click Rate
+          </div>
+          <div style="font-size:30px;font-weight:700;color:#263238;">
+            ${percent(traffic.legacy_no_click_rate)}
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size:13px;color:#66757f;">
+            Organic Traffic / Day
+          </div>
+          <div style="font-size:30px;font-weight:700;color:#263238;">
+            ${billions(traffic.legacy_organic_traffic)}
+          </div>
+        </div>
+      </div>
+
+      <div style="
+        padding:24px;
+        background:#eef8fb;
+        border:1px solid #cceaf3;
+        border-radius:14px;
+      ">
+        <div style="
+          font-size:13px;
+          font-weight:600;
+          text-transform:uppercase;
+          letter-spacing:.8px;
+          color:#0096c7;
+          margin-bottom:18px;
+        ">
+          AI Ask & Answer
+        </div>
+
+        <div style="margin-bottom:18px;">
+          <div style="font-size:13px;color:#66757f;">
+            Time per Search
+          </div>
+          <div style="font-size:30px;font-weight:700;color:#263238;">
+            ${minutes(time.ai_minutes_per_search)} min
+          </div>
+        </div>
+
+        <div style="margin-bottom:18px;">
+          <div style="font-size:13px;color:#66757f;">
+            No-Click Rate
+          </div>
+          <div style="font-size:30px;font-weight:700;color:#263238;">
+            ${percent(traffic.ai_no_click_rate)}
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size:13px;color:#66757f;">
+            Organic Traffic / Day
+          </div>
+          <div style="font-size:30px;font-weight:700;color:#263238;">
+            ${billions(traffic.ai_organic_traffic)}
+          </div>
+        </div>
+      </div>
+
+    </div>
+  `;
+
+  console.log("✅ Google Search Stage 1 rendered");
 }
 
 document.addEventListener("DOMContentLoaded", initDigitolModelPOC);
