@@ -10,6 +10,24 @@
      let primaryModelData = null;
      let comparisonModelData = null;
 
+   const formatCompact = (value) => {
+    const n = Number(value);
+
+    if (n >= 1000000000) {
+      return `${(n / 1000000000).toFixed(2)}B`;
+    }
+
+    if (n >= 1000000) {
+      return `${(n / 1000000).toFixed(1)}M`;
+    }
+
+    if (n >= 1000) {
+      return `${(n / 1000).toFixed(1)}K`;
+    }
+
+    return n.toFixed(0);
+  };  
+
   async function updateGoogleSearchModel(data) {
     const model = document.getElementById("digitol-model");
 
@@ -289,7 +307,7 @@
           color:#66757f;
           margin-bottom:12px;
         ">
-          Legacy Google Search
+          Legacy Google Search - 2014
         </div>
 
         <div style="
@@ -373,7 +391,7 @@
           color:#0096c7;
           margin-bottom:12px;
         ">
-          AI Ask & Answer
+          AI Ask & Answer - 2030
         </div>
 
         <div style="
@@ -434,70 +452,158 @@
     </div>
 
 
-    <div style="
-      padding:24px;
-      background:#263238;
-      border-radius:14px;
-      margin-bottom:28px;
-    ">
+<div style="
+  padding:24px 30px;
+  background:#263238;
+  border-radius:14px;
+  margin-bottom:28px;
+">
 
+  <div style="
+    font-size:12px;
+    font-weight:600;
+    color:#b7c6ce;
+    text-transform:uppercase;
+    letter-spacing:.8px;
+    margin-bottom:20px;
+  ">
+    Modeled Organic Traffic Reaching Websites
+  </div>
+
+  <div style="
+    display:grid;
+    grid-template-columns:1fr 52px 1fr;
+    gap:20px;
+    align-items:center;
+  ">
+
+    <div>
       <div style="
-        font-size:12px;
+        font-size:13px;
         font-weight:600;
         color:#b7c6ce;
-        text-transform:uppercase;
-        letter-spacing:.8px;
         margin-bottom:8px;
       ">
-        Modeled Organic Traffic Reaching Websites
+        2014
       </div>
 
       <div style="
-        display:flex;
-        align-items:center;
-        flex-wrap:wrap;
-        gap:14px;
+        font-size:30px;
+        font-weight:700;
+        color:#ffffff;
+        line-height:1.1;
       ">
-        <span style="
-          font-size:30px;
-          font-weight:700;
-          color:#ffffff;
-        ">
-          ${billions(
-            traffic.legacy_organic_traffic
-          )} / day
-        </span>
-
-        <span style="
-          font-size:25px;
-          color:#7f929c;
-        ">
-          →
-        </span>
-
-        <span style="
-          font-size:30px;
-          font-weight:700;
-          color:#ffffff;
-        ">
-          ${billions(
-            traffic.ai_organic_traffic
-          )} / day
-        </span>
+        ${billions(
+          traffic.legacy_organic_traffic
+        )} / day
       </div>
 
       <div style="
-        margin-top:10px;
-        color:#d7e0e4;
-        font-size:14px;
-        line-height:1.5;
+        color:#b7c6ce;
+        font-size:12px;
+        margin-top:5px;
       ">
-        As more searches end without a website visit,
-        the modeled organic traffic pool available to
-        websites becomes smaller.
+        Organic Visits
       </div>
 
+      <div style="
+        margin-top:16px;
+        font-size:21px;
+        font-weight:700;
+        color:#ffffff;
+      ">
+        ${formatCompact(
+          modelData.stage2.series[0].active_websites
+        )}
+      </div>
+
+      <div style="
+        color:#b7c6ce;
+        font-size:12px;
+        margin-top:3px;
+      ">
+        Active Websites
+      </div>
     </div>
+
+
+    <div style="
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:28px;
+      color:#00a6d6;
+    ">
+      →
+    </div>
+
+
+    <div>
+      <div style="
+        font-size:13px;
+        font-weight:600;
+        color:#b7c6ce;
+        margin-bottom:8px;
+      ">
+        2030
+      </div>
+
+      <div style="
+        font-size:30px;
+        font-weight:700;
+        color:#ffffff;
+        line-height:1.1;
+      ">
+        ${billions(
+          traffic.ai_organic_traffic
+        )} / day
+      </div>
+
+      <div style="
+        color:#b7c6ce;
+        font-size:12px;
+        margin-top:5px;
+      ">
+        Organic Visits
+      </div>
+
+      <div style="
+        margin-top:16px;
+        font-size:21px;
+        font-weight:700;
+        color:#ffffff;
+      ">
+        ${formatCompact(
+          modelData.stage2.series[
+            modelData.stage2.series.length - 1
+          ].active_websites
+        )}
+      </div>
+
+      <div style="
+        color:#b7c6ce;
+        font-size:12px;
+        margin-top:3px;
+      ">
+        Active Websites
+      </div>
+    </div>
+
+  </div>
+
+  <div style="
+    margin-top:22px;
+    padding-top:16px;
+    border-top:1px solid rgba(255,255,255,.14);
+    color:#d7e0e4;
+    font-size:14px;
+    line-height:1.5;
+  ">
+    Less modeled organic traffic. More active websites
+    competing for it.
+  </div>
+
+</div>
 
 
     <div style="
@@ -558,23 +664,7 @@
       maximumFractionDigits: decimals
     });
 
-  const formatCompact = (value) => {
-    const n = Number(value);
 
-    if (n >= 1000000000) {
-      return `${(n / 1000000000).toFixed(2)}B`;
-    }
-
-    if (n >= 1000000) {
-      return `${(n / 1000000).toFixed(1)}M`;
-    }
-
-    if (n >= 1000) {
-      return `${(n / 1000).toFixed(1)}K`;
-    }
-
-    return n.toFixed(0);
-  };
 
   /* -----------------------------------------------------
      Build SVG line chart from production API series
