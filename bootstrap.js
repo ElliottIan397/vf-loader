@@ -1546,6 +1546,74 @@ window.addEventListener("message", (event) => {
 });
 
 /* =====================================================
+   DIGITOL INTERACTIVE MODEL LOADER
+   Loads only the model required by the current page
+   ===================================================== */
+
+function loadDigitolModelModule() {
+  const model = document.getElementById("digitol-model");
+
+  // No model declared on this page — nothing to load.
+  if (!model) {
+    return;
+  }
+
+  const modelKey = model.dataset.model;
+
+  console.log("📊 Digitol model requested:", modelKey);
+
+  const modelModules = {
+    "google-search":
+      "https://elliottian397.github.io/vf-loader/models/google-search.js"
+  };
+
+  const moduleUrl = modelModules[modelKey];
+
+  if (!moduleUrl) {
+    console.warn("📊 No Digitol model module registered for:", modelKey);
+    return;
+  }
+
+  // Prevent accidental duplicate loading.
+  if (document.querySelector(`script[data-digitol-model="${modelKey}"]`)) {
+    return;
+  }
+
+  const script = document.createElement("script");
+
+  script.src = moduleUrl;
+  script.type = "text/javascript";
+  script.async = true;
+  script.dataset.digitolModel = modelKey;
+
+  script.onload = () => {
+    console.log("✅ Digitol model module loaded:", modelKey);
+
+    if (
+      modelKey === "google-search" &&
+      window.DigitolGoogleSearchModel
+    ) {
+      window.DigitolGoogleSearchModel.init();
+    }
+  };
+
+  script.onerror = (err) => {
+    console.error(
+      "❌ Digitol model module failed to load:",
+      modelKey,
+      err
+    );
+  };
+
+  document.head.appendChild(script);
+}
+
+document.addEventListener(
+  "DOMContentLoaded",
+  loadDigitolModelModule
+);
+
+/* =====================================================
    DIGITOL INTERACTIVE MODELS
    POC — Google Search
    ===================================================== */
