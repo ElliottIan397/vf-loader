@@ -152,7 +152,7 @@
           line-height:1.5;
           margin-bottom:28px;
         ">
-          Explore the model below. Ask Alex to personalize the results using your website's Domain Authority.
+          What happens to website traffic when people get answers without visiting websites?
         </div>
 
         <div id="digitol-stage1-content">
@@ -210,124 +210,322 @@
 }
 
   function renderGoogleSearchStage1(modelData) {
-    const content = document.getElementById("digitol-stage1-content");
+  const content = document.getElementById(
+    "digitol-stage1-content"
+  );
 
-    if (!content || !modelData?.stage1) return;
+  if (!content || !modelData?.stage1) return;
 
-    const stage1 = modelData.stage1;
-    const time = stage1.time;
-    const traffic = stage1.traffic;
+  const stage1 = modelData.stage1;
+  const time = stage1.time;
+  const traffic = stage1.traffic;
 
-    const billions = (value) =>
-      `${(Number(value) / 1000000000).toFixed(2)}B`;
+  const billions = (value) =>
+    `${(Number(value) / 1000000000).toFixed(2)}B`;
 
-    const minutes = (value) =>
-      Number(value).toFixed(2);
+  const minutes = (value) =>
+    Number(value).toFixed(2);
 
-    const percent = (value) =>
-      `${(Number(value) * 100).toFixed(0)}%`;
+  const percent = (value) =>
+    `${(Number(value) * 100).toFixed(0)}%`;
 
-    content.innerHTML = `
+  content.innerHTML = `
+
+    <div style="
+      margin-bottom:30px;
+    ">
       <div style="
-        display:grid;
-        grid-template-columns:1fr 1fr;
-        gap:20px;
+        font-size:13px;
+        font-weight:600;
+        color:#0096c7;
+        text-transform:uppercase;
+        letter-spacing:.8px;
+        margin-bottom:8px;
       ">
-
-        <div style="
-          padding:24px;
-          background:#f6f8fa;
-          border-radius:14px;
-        ">
-          <div style="
-            font-size:13px;
-            font-weight:600;
-            text-transform:uppercase;
-            letter-spacing:.8px;
-            color:#66757f;
-            margin-bottom:18px;
-          ">
-            Legacy Google Search
-          </div>
-
-          <div style="margin-bottom:18px;">
-            <div style="font-size:13px;color:#66757f;">
-              Time per Search
-            </div>
-            <div style="font-size:30px;font-weight:700;color:#263238;">
-              ${minutes(time.legacy_minutes_per_search)} min
-            </div>
-          </div>
-
-          <div style="margin-bottom:18px;">
-            <div style="font-size:13px;color:#66757f;">
-              No-Click Rate
-            </div>
-            <div style="font-size:30px;font-weight:700;color:#263238;">
-              ${percent(traffic.legacy_no_click_rate)}
-            </div>
-          </div>
-
-          <div>
-            <div style="font-size:13px;color:#66757f;">
-              Organic Traffic / Day
-            </div>
-            <div style="font-size:30px;font-weight:700;color:#263238;">
-              ${billions(traffic.legacy_organic_traffic)}
-            </div>
-          </div>
-        </div>
-
-        <div style="
-          padding:24px;
-          background:#eef8fb;
-          border:1px solid #cceaf3;
-          border-radius:14px;
-        ">
-          <div style="
-            font-size:13px;
-            font-weight:600;
-            text-transform:uppercase;
-            letter-spacing:.8px;
-            color:#0096c7;
-            margin-bottom:18px;
-          ">
-            AI Ask & Answer
-          </div>
-
-          <div style="margin-bottom:18px;">
-            <div style="font-size:13px;color:#66757f;">
-              Time per Search
-            </div>
-            <div style="font-size:30px;font-weight:700;color:#263238;">
-              ${minutes(time.ai_minutes_per_search)} min
-            </div>
-          </div>
-
-          <div style="margin-bottom:18px;">
-            <div style="font-size:13px;color:#66757f;">
-              No-Click Rate
-            </div>
-            <div style="font-size:30px;font-weight:700;color:#263238;">
-              ${percent(traffic.ai_no_click_rate)}
-            </div>
-          </div>
-
-          <div>
-            <div style="font-size:13px;color:#66757f;">
-              Organic Traffic / Day
-            </div>
-            <div style="font-size:30px;font-weight:700;color:#263238;">
-              ${billions(traffic.ai_organic_traffic)}
-            </div>
-          </div>
-        </div>
-
+        How Search Is Changing
       </div>
-    `;
 
-    console.log("✅ Google Search Stage 1 rendered");
-  }
+      <div style="
+        font-size:24px;
+        line-height:1.3;
+        color:#263238;
+        margin-bottom:10px;
+      ">
+        From finding websites to getting answers
+      </div>
+
+      <div style="
+        max-width:820px;
+        color:#66757f;
+        font-size:15px;
+        line-height:1.6;
+      ">
+        The model illustrates how a shift from traditional
+        search to AI Ask & Answer can affect both the time
+        required to find an answer and the organic traffic
+        ultimately distributed to websites.
+      </div>
+    </div>
+
+
+    <div style="
+      display:grid;
+      grid-template-columns:1fr 52px 1fr;
+      gap:16px;
+      align-items:stretch;
+      margin-bottom:28px;
+    ">
+
+      <div style="
+        padding:24px;
+        background:#f6f8fa;
+        border-radius:14px;
+      ">
+        <div style="
+          font-size:13px;
+          font-weight:600;
+          text-transform:uppercase;
+          letter-spacing:.8px;
+          color:#66757f;
+          margin-bottom:12px;
+        ">
+          Legacy Google Search
+        </div>
+
+        <div style="
+          font-size:15px;
+          color:#263238;
+          margin-bottom:24px;
+        ">
+          Search → Results → Website → Answer
+        </div>
+
+        <div style="
+          display:grid;
+          grid-template-columns:1fr 1fr;
+          gap:20px;
+        ">
+          <div>
+            <div style="
+              font-size:12px;
+              color:#66757f;
+              margin-bottom:5px;
+            ">
+              Modeled Search Cycle
+            </div>
+
+            <div style="
+              font-size:28px;
+              font-weight:700;
+              color:#263238;
+            ">
+              ${minutes(
+                time.legacy_minutes_per_search
+              )} min
+            </div>
+          </div>
+
+          <div>
+            <div style="
+              font-size:12px;
+              color:#66757f;
+              margin-bottom:5px;
+            ">
+              No-Click Rate
+            </div>
+
+            <div style="
+              font-size:28px;
+              font-weight:700;
+              color:#263238;
+            ">
+              ${percent(
+                traffic.legacy_no_click_rate
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <div style="
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        font-size:28px;
+        color:#0096c7;
+      ">
+        →
+      </div>
+
+
+      <div style="
+        padding:24px;
+        background:#eef8fb;
+        border:1px solid #cceaf3;
+        border-radius:14px;
+      ">
+        <div style="
+          font-size:13px;
+          font-weight:600;
+          text-transform:uppercase;
+          letter-spacing:.8px;
+          color:#0096c7;
+          margin-bottom:12px;
+        ">
+          AI Ask & Answer
+        </div>
+
+        <div style="
+          font-size:15px;
+          color:#263238;
+          margin-bottom:24px;
+        ">
+          Ask → Answer → Refine
+        </div>
+
+        <div style="
+          display:grid;
+          grid-template-columns:1fr 1fr;
+          gap:20px;
+        ">
+          <div>
+            <div style="
+              font-size:12px;
+              color:#66757f;
+              margin-bottom:5px;
+            ">
+              Modeled Answer Cycle
+            </div>
+
+            <div style="
+              font-size:28px;
+              font-weight:700;
+              color:#263238;
+            ">
+              ${minutes(
+                time.ai_minutes_per_search
+              )} min
+            </div>
+          </div>
+
+          <div>
+            <div style="
+              font-size:12px;
+              color:#66757f;
+              margin-bottom:5px;
+            ">
+              No-Click Rate
+            </div>
+
+            <div style="
+              font-size:28px;
+              font-weight:700;
+              color:#263238;
+            ">
+              ${percent(
+                traffic.ai_no_click_rate
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+
+    <div style="
+      padding:24px;
+      background:#263238;
+      border-radius:14px;
+      margin-bottom:28px;
+    ">
+
+      <div style="
+        font-size:12px;
+        font-weight:600;
+        color:#b7c6ce;
+        text-transform:uppercase;
+        letter-spacing:.8px;
+        margin-bottom:8px;
+      ">
+        Modeled Organic Traffic Reaching Websites
+      </div>
+
+      <div style="
+        display:flex;
+        align-items:center;
+        flex-wrap:wrap;
+        gap:14px;
+      ">
+        <span style="
+          font-size:30px;
+          font-weight:700;
+          color:#ffffff;
+        ">
+          ${billions(
+            traffic.legacy_organic_traffic
+          )} / day
+        </span>
+
+        <span style="
+          font-size:25px;
+          color:#7f929c;
+        ">
+          →
+        </span>
+
+        <span style="
+          font-size:30px;
+          font-weight:700;
+          color:#ffffff;
+        ">
+          ${billions(
+            traffic.ai_organic_traffic
+          )} / day
+        </span>
+      </div>
+
+      <div style="
+        margin-top:10px;
+        color:#d7e0e4;
+        font-size:14px;
+        line-height:1.5;
+      ">
+        As more searches end without a website visit,
+        the modeled organic traffic pool available to
+        websites becomes smaller.
+      </div>
+
+    </div>
+
+
+    <div style="
+      padding:18px 20px;
+      border-left:4px solid #0096c7;
+      background:#f6f8fa;
+      color:#263238;
+      font-size:15px;
+      line-height:1.6;
+    ">
+      <strong>
+        What does a smaller organic traffic pool mean
+        for your website?
+      </strong>
+
+      Domain Authority influences how much of the
+      remaining organic traffic a website may compete
+      for. Explore the distribution model below, then
+      ask Alex to personalize it using your website's
+      Domain Authority.
+    </div>
+
+  `;
+
+  console.log(
+    "✅ Google Search Stage 1 rendered"
+  );
+}
 
    function renderGoogleSearchStage2(
      modelData,
