@@ -625,18 +625,18 @@ function renderGoogleSearchStage2(modelData) {
           color:#66757f;
           margin-bottom:5px;
         ">
-          ${last.year} Active Websites
+          ${last.year} Active Websites in DA Band ${modelData.da_band}
         </div>
-
+      
         <div style="
           font-size:20px;
           font-weight:700;
           color:#263238;
         ">
-          ${formatCompact(last.active_websites)}
+          ${formatCompact(last.active_websites_in_da_band)}
         </div>
       </div>
-
+      
       <div style="
         padding:16px;
         background:#f6f8fa;
