@@ -297,32 +297,404 @@
     console.log("✅ Google Search Stage 1 rendered");
   }
 
-   function renderGoogleSearchStage2(modelData) {
-     const content = document.getElementById("digitol-stage2-content");
-   
-     if (!content || !modelData?.stage2?.series) return;
-   
-     const series = modelData.stage2.series;
-   
-     content.innerHTML = `
-       <div>
-         Domain Authority:
-         <strong>${modelData.domain_authority}</strong>
-         &nbsp;|&nbsp;
-         DA Band:
-         <strong>${modelData.da_band}</strong>
-         &nbsp;|&nbsp;
-         Model Years:
-         <strong>${series[0].year}–${series[series.length - 1].year}</strong>
-       </div>
-     `;
-   
-     console.log(
-       "✅ Google Search Stage 2 loaded:",
-       modelData.da_band,
-       series
-     );
-   }
+function renderGoogleSearchStage2(modelData) {
+  const content = document.getElementById("digitol-stage2-content");
+
+  if (!content || !modelData?.stage2?.series?.length) return;
+
+  const series = modelData.stage2.series;
+  const first = series[0];
+  const last = series[series.length - 1];
+
+  const formatNumber = (value, decimals = 1) =>
+    Number(value).toLocaleString("en-US", {
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals
+    });
+
+  const formatCompact = (value) => {
+    const n = Number(value);
+
+    if (n >= 1000000000) {
+      return `${(n / 1000000000).toFixed(2)}B`;
+    }
+
+    if (n >= 1000000) {
+      return `${(n / 1000000).toFixed(1)}M`;
+    }
+
+    if (n >= 1000) {
+      return `${(n / 1000).toFixed(1)}K`;
+    }
+
+    return n.toFixed(0);
+  };
+
+  /* -----------------------------------------------------
+     Build SVG line chart from production API series
+     ----------------------------------------------------- */
+
+  const chartWidth = 900;
+  const chartHeight = 300;
+
+  const padding = {
+    top: 25,
+    right: 25,
+    bottom: 45,
+    left: 65
+  };
+
+  const plotWidth =
+    chartWidth - padding.left - padding.right;
+
+  const plotHeight =
+    chartHeight - padding.top - padding.bottom;
+
+  const values = series.map(
+    item => Number(item.visits_per_site_per_day)
+  );
+
+  const maxValue = Math.max(...values);
+
+  // Give the top of the chart a little breathing room.
+  const yMax = maxValue * 1.1;
+
+  const xForIndex = (index) =>
+    padding.left +
+    (index / (series.length - 1)) * plotWidth;
+
+  const yForValue = (value) =>
+    padding.top +
+    plotHeight -
+    (Number(value) / yMax) * plotHeight;
+
+  const points = series
+    .map((item, index) => {
+      return `${xForIndex(index)},${yForValue(
+        item.visits_per_site_per_day
+      )}`;
+    })
+    .join(" ");
+
+  const yTicks = 4;
+
+  let gridLines = "";
+
+  for (let i = 0; i <= yTicks; i++) {
+    const value = (yMax / yTicks) * i;
+    const y = yForValue(value);
+
+    gridLines += `
+      <line
+        x1="${padding.left}"
+        y1="${y}"
+        x2="${chartWidth - padding.right}"
+        y2="${y}"
+        stroke="#e3e7ea"
+        stroke-width="1"
+      />
+
+      <text
+        x="${padding.left - 12}"
+        y="${y + 4}"
+        text-anchor="end"
+        font-size="12"
+        fill="#66757f"
+      >
+        ${formatNumber(value, 1)}
+      </text>
+    `;
+  }
+
+  const labelYears = [2014, 2018, 2022, 2026, 2030];
+
+  const xLabels = labelYears
+    .map(year => {
+      const index = series.findIndex(
+        item => Number(item.year) === year
+      );
+
+      if (index === -1) return "";
+
+      const x = xForIndex(index);
+
+      return `
+        <text
+          x="${x}"
+          y="${chartHeight - 12}"
+          text-anchor="middle"
+          font-size="12"
+          fill="#66757f"
+        >
+          ${year}
+        </text>
+      `;
+    })
+    .join("");
+
+  const dataPoints = series
+    .map((item, index) => {
+      const x = xForIndex(index);
+      const y = yForValue(
+        item.visits_per_site_per_day
+      );
+
+      return `
+        <circle
+          cx="${x}"
+          cy="${y}"
+          r="3.5"
+          fill="#0096c7"
+        >
+          <title>
+            ${item.year}: ${formatNumber(
+              item.visits_per_site_per_day,
+              2
+            )} visits/site/day
+          </title>
+        </circle>
+      `;
+    })
+    .join("");
+
+  content.innerHTML = `
+
+    <div style="
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:space-between;
+      align-items:center;
+      gap:16px;
+      margin-bottom:24px;
+    ">
+
+      <div>
+        <div style="
+          font-size:13px;
+          color:#66757f;
+          margin-bottom:5px;
+        ">
+          Domain Authority
+        </div>
+
+        <div style="
+          font-size:24px;
+          font-weight:700;
+          color:#263238;
+        ">
+          ${modelData.domain_authority}
+        </div>
+      </div>
+
+      <div style="
+        padding:8px 14px;
+        background:#eef8fb;
+        border:1px solid #cceaf3;
+        border-radius:20px;
+        font-size:13px;
+        font-weight:600;
+        color:#0096c7;
+      ">
+        DA Band ${modelData.da_band}
+      </div>
+
+    </div>
+
+
+    <div style="
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:16px;
+      margin-bottom:26px;
+    ">
+
+      <div style="
+        padding:18px;
+        background:#f6f8fa;
+        border-radius:12px;
+      ">
+        <div style="
+          font-size:13px;
+          color:#66757f;
+          margin-bottom:6px;
+        ">
+          ${first.year} Organic Visits / Site / Day
+        </div>
+
+        <div style="
+          font-size:28px;
+          font-weight:700;
+          color:#263238;
+        ">
+          ${formatNumber(
+            first.visits_per_site_per_day,
+            2
+          )}
+        </div>
+      </div>
+
+      <div style="
+        padding:18px;
+        background:#eef8fb;
+        border:1px solid #cceaf3;
+        border-radius:12px;
+      ">
+        <div style="
+          font-size:13px;
+          color:#66757f;
+          margin-bottom:6px;
+        ">
+          ${last.year} Organic Visits / Site / Day
+        </div>
+
+        <div style="
+          font-size:28px;
+          font-weight:700;
+          color:#263238;
+        ">
+          ${formatNumber(
+            last.visits_per_site_per_day,
+            2
+          )}
+        </div>
+      </div>
+
+    </div>
+
+
+    <div style="
+      margin-bottom:10px;
+      font-size:14px;
+      font-weight:600;
+      color:#263238;
+    ">
+      Estimated Organic Visits per Website / Day
+    </div>
+
+    <div style="
+      width:100%;
+      overflow-x:auto;
+      margin-bottom:28px;
+    ">
+
+      <svg
+        viewBox="0 0 ${chartWidth} ${chartHeight}"
+        role="img"
+        aria-label="Organic visits per website per day from ${first.year} to ${last.year}"
+        style="
+          width:100%;
+          min-width:620px;
+          height:auto;
+          display:block;
+        "
+      >
+
+        ${gridLines}
+
+        <polyline
+          points="${points}"
+          fill="none"
+          stroke="#0096c7"
+          stroke-width="4"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+
+        ${dataPoints}
+
+        ${xLabels}
+
+      </svg>
+
+    </div>
+
+
+    <div style="
+      display:grid;
+      grid-template-columns:repeat(3, 1fr);
+      gap:16px;
+    ">
+
+      <div style="
+        padding:16px;
+        background:#f6f8fa;
+        border-radius:10px;
+      ">
+        <div style="
+          font-size:12px;
+          color:#66757f;
+          margin-bottom:5px;
+        ">
+          ${last.year} Active Websites
+        </div>
+
+        <div style="
+          font-size:20px;
+          font-weight:700;
+          color:#263238;
+        ">
+          ${formatCompact(last.active_websites)}
+        </div>
+      </div>
+
+      <div style="
+        padding:16px;
+        background:#f6f8fa;
+        border-radius:10px;
+      ">
+        <div style="
+          font-size:12px;
+          color:#66757f;
+          margin-bottom:5px;
+        ">
+          ${last.year} Organic Distribution
+        </div>
+
+        <div style="
+          font-size:20px;
+          font-weight:700;
+          color:#263238;
+        ">
+          ${formatNumber(
+            last.organic_distribution_pct,
+            1
+          )}%
+        </div>
+      </div>
+
+      <div style="
+        padding:16px;
+        background:#f6f8fa;
+        border-radius:10px;
+      ">
+        <div style="
+          font-size:12px;
+          color:#66757f;
+          margin-bottom:5px;
+        ">
+          ${last.year} Organic Traffic in DA Band / Day
+        </div>
+
+        <div style="
+          font-size:20px;
+          font-weight:700;
+          color:#263238;
+        ">
+          ${formatCompact(
+            last.organic_traffic_in_da_band_per_day
+          )}
+        </div>
+      </div>
+
+    </div>
+  `;
+
+  console.log(
+    "✅ Google Search Stage 2 rendered:",
+    modelData.da_band,
+    series
+  );
+}
    
   // Expose only the functions bootstrap.js needs.
   window.DigitolGoogleSearchModel = {
