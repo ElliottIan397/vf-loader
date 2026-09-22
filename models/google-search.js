@@ -7,6 +7,9 @@
 
   console.log("📊 Google Search model module loaded");
 
+     let primaryModelData = null;
+     let comparisonModelData = null;
+
   async function updateGoogleSearchModel(data) {
     const model = document.getElementById("digitol-model");
 
@@ -21,6 +24,11 @@
     }
 
     const domainAuthority = Number(data.domain_authority);
+
+     const mode =
+        data.mode === "compare"
+          ? "compare"
+          : "replace";
 
     if (
       !Number.isFinite(domainAuthority) ||
@@ -60,9 +68,29 @@
       );
 
       window.__digitolGoogleSearchModel = modelData;
-
-            renderGoogleSearchStage1(modelData);
-            renderGoogleSearchStage2(modelData);
+      
+      if (mode === "compare" && primaryModelData) {
+        comparisonModelData = modelData;
+      
+        console.log(
+          "📊 Comparison model stored:",
+          comparisonModelData.domain_authority,
+          comparisonModelData.da_band
+        );
+      
+      } else {
+        primaryModelData = modelData;
+        comparisonModelData = null;
+      
+        console.log(
+          "📊 Primary model stored:",
+          primaryModelData.domain_authority,
+          primaryModelData.da_band
+        );
+      }
+      
+      renderGoogleSearchStage1(primaryModelData);
+      renderGoogleSearchStage2(primaryModelData);
 
     } catch (err) {
       console.error(
