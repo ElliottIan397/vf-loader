@@ -90,7 +90,11 @@
       }
       
       renderGoogleSearchStage1(primaryModelData);
-      renderGoogleSearchStage2(primaryModelData);
+      renderGoogleSearchStage1(primaryModelData);
+      renderGoogleSearchStage2(
+        primaryModelData,
+        comparisonModelData
+      );
 
     } catch (err) {
       console.error(
@@ -325,7 +329,10 @@
     console.log("✅ Google Search Stage 1 rendered");
   }
 
-function renderGoogleSearchStage2(modelData) {
+   function renderGoogleSearchStage2(
+     modelData,
+     comparisonData = null
+   ) {
   const content = document.getElementById("digitol-stage2-content");
 
   if (!content || !modelData?.stage2?.series?.length) return;
