@@ -120,7 +120,7 @@
           line-height:1.5;
           margin-bottom:28px;
         ">
-          Ask Alex to run the model using your website's Domain Authority.
+          Explore the model below. Ask Alex to personalize the results using your website's Domain Authority.
         </div>
 
         <div id="digitol-stage1-content">
