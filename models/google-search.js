@@ -341,6 +341,19 @@
   const first = series[0];
   const last = series[series.length - 1];
 
+  const comparisonSeries =
+     comparisonData?.stage2?.series || [];
+   
+   const comparisonFirst =
+     comparisonSeries.length
+       ? comparisonSeries[0]
+       : null;
+
+   const comparisonLast =
+     comparisonSeries.length
+       ? comparisonSeries[comparisonSeries.length - 1]
+       : null;    
+
   const formatNumber = (value, decimals = 1) =>
     Number(value).toLocaleString("en-US", {
       minimumFractionDigits: decimals,
@@ -388,10 +401,7 @@
    const values = series.map(
      item => Number(item.visits_per_site_per_day)
    );
-   
-   const comparisonSeries =
-     comparisonData?.stage2?.series || [];
-   
+     
    const comparisonValues = comparisonSeries.map(
      item => Number(item.visits_per_site_per_day)
    );
@@ -584,65 +594,152 @@
     </div>
 
 
+<div style="
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+  margin-bottom:26px;
+">
+
+  <div style="
+    padding:18px;
+    background:#f6f8fa;
+    border-radius:12px;
+  ">
     <div style="
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:16px;
-      margin-bottom:26px;
+      font-size:13px;
+      color:#66757f;
+      margin-bottom:10px;
     ">
-
-      <div style="
-        padding:18px;
-        background:#f6f8fa;
-        border-radius:12px;
-      ">
-        <div style="
-          font-size:13px;
-          color:#66757f;
-          margin-bottom:6px;
-        ">
-          ${first.year} Organic Visits / Site / Day
-        </div>
-
-        <div style="
-          font-size:28px;
-          font-weight:700;
-          color:#263238;
-        ">
-          ${formatNumber(
-            first.visits_per_site_per_day,
-            2
-          )}
-        </div>
-      </div>
-
-      <div style="
-        padding:18px;
-        background:#eef8fb;
-        border:1px solid #cceaf3;
-        border-radius:12px;
-      ">
-        <div style="
-          font-size:13px;
-          color:#66757f;
-          margin-bottom:6px;
-        ">
-          ${last.year} Organic Visits / Site / Day
-        </div>
-
-        <div style="
-          font-size:28px;
-          font-weight:700;
-          color:#263238;
-        ">
-          ${formatNumber(
-            last.visits_per_site_per_day,
-            2
-          )}
-        </div>
-      </div>
-
+      ${first.year} Organic Visits / Site / Day
     </div>
+
+    ${
+      comparisonFirst
+        ? `
+          <div style="
+            display:flex;
+            justify-content:space-between;
+            gap:16px;
+            margin-bottom:8px;
+          ">
+            <span style="color:#0096c7;">
+              DA ${modelData.domain_authority}
+              · Band ${modelData.da_band}
+            </span>
+
+            <strong style="color:#263238;">
+              ${formatNumber(
+                first.visits_per_site_per_day,
+                2
+              )}
+            </strong>
+          </div>
+
+          <div style="
+            display:flex;
+            justify-content:space-between;
+            gap:16px;
+          ">
+            <span style="color:#66757f;">
+              DA ${comparisonData.domain_authority}
+              · Band ${comparisonData.da_band}
+            </span>
+
+            <strong style="color:#263238;">
+              ${formatNumber(
+                comparisonFirst.visits_per_site_per_day,
+                2
+              )}
+            </strong>
+          </div>
+        `
+        : `
+          <div style="
+            font-size:28px;
+            font-weight:700;
+            color:#263238;
+          ">
+            ${formatNumber(
+              first.visits_per_site_per_day,
+              2
+            )}
+          </div>
+        `
+    }
+  </div>
+
+
+  <div style="
+    padding:18px;
+    background:#eef8fb;
+    border:1px solid #cceaf3;
+    border-radius:12px;
+  ">
+    <div style="
+      font-size:13px;
+      color:#66757f;
+      margin-bottom:10px;
+    ">
+      ${last.year} Organic Visits / Site / Day
+    </div>
+
+    ${
+      comparisonLast
+        ? `
+          <div style="
+            display:flex;
+            justify-content:space-between;
+            gap:16px;
+            margin-bottom:8px;
+          ">
+            <span style="color:#0096c7;">
+              DA ${modelData.domain_authority}
+              · Band ${modelData.da_band}
+            </span>
+
+            <strong style="color:#263238;">
+              ${formatNumber(
+                last.visits_per_site_per_day,
+                2
+              )}
+            </strong>
+          </div>
+
+          <div style="
+            display:flex;
+            justify-content:space-between;
+            gap:16px;
+          ">
+            <span style="color:#66757f;">
+              DA ${comparisonData.domain_authority}
+              · Band ${comparisonData.da_band}
+            </span>
+
+            <strong style="color:#263238;">
+              ${formatNumber(
+                comparisonLast.visits_per_site_per_day,
+                2
+              )}
+            </strong>
+          </div>
+        `
+        : `
+          <div style="
+            font-size:28px;
+            font-weight:700;
+            color:#263238;
+          ">
+            ${formatNumber(
+              last.visits_per_site_per_day,
+              2
+            )}
+          </div>
+        `
+    }
+  </div>
+
+</div>
 
    ${
      comparisonData
@@ -759,84 +856,176 @@
     </div>
 
 
+<div style="
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:16px;
+">
+
+  <div style="
+    padding:16px;
+    background:#f6f8fa;
+    border-radius:10px;
+  ">
     <div style="
-      display:grid;
-      grid-template-columns:repeat(3, 1fr);
-      gap:16px;
+      font-size:12px;
+      color:#66757f;
+      margin-bottom:8px;
     ">
-
-      <div style="
-        padding:16px;
-        background:#f6f8fa;
-        border-radius:10px;
-      ">
-        <div style="
-          font-size:12px;
-          color:#66757f;
-          margin-bottom:5px;
-        ">
-          ${last.year} Active Websites in DA Band ${modelData.da_band}
-        </div>
-      
-        <div style="
-          font-size:20px;
-          font-weight:700;
-          color:#263238;
-        ">
-          ${formatCompact(last.active_websites_in_da_band)}
-        </div>
-      </div>
-      
-      <div style="
-        padding:16px;
-        background:#f6f8fa;
-        border-radius:10px;
-      ">
-        <div style="
-          font-size:12px;
-          color:#66757f;
-          margin-bottom:5px;
-        ">
-          ${last.year} Organic Distribution
-        </div>
-
-        <div style="
-          font-size:20px;
-          font-weight:700;
-          color:#263238;
-        ">
-          ${formatNumber(
-            last.organic_distribution_pct,
-            1
-          )}%
-        </div>
-      </div>
-
-      <div style="
-        padding:16px;
-        background:#f6f8fa;
-        border-radius:10px;
-      ">
-        <div style="
-          font-size:12px;
-          color:#66757f;
-          margin-bottom:5px;
-        ">
-          ${last.year} Organic Traffic in DA Band / Day
-        </div>
-
-        <div style="
-          font-size:20px;
-          font-weight:700;
-          color:#263238;
-        ">
-          ${formatCompact(
-            last.organic_traffic_in_da_band_per_day
-          )}
-        </div>
-      </div>
-
+      ${last.year} Active Websites in DA Band
     </div>
+
+    ${
+      comparisonLast
+        ? `
+          <div style="
+            display:flex;
+            justify-content:space-between;
+            gap:10px;
+            margin-bottom:6px;
+          ">
+            <span style="color:#0096c7;">
+              ${modelData.da_band}
+            </span>
+            <strong>
+              ${formatCompact(
+                last.active_websites_in_da_band
+              )}
+            </strong>
+          </div>
+
+          <div style="
+            display:flex;
+            justify-content:space-between;
+            gap:10px;
+          ">
+            <span style="color:#66757f;">
+              ${comparisonData.da_band}
+            </span>
+            <strong>
+              ${formatCompact(
+                comparisonLast.active_websites_in_da_band
+              )}
+            </strong>
+          </div>
+        `
+        : `
+          <div style="
+            font-size:20px;
+            font-weight:700;
+            color:#263238;
+          ">
+            ${formatCompact(
+              last.active_websites_in_da_band
+            )}
+          </div>
+        `
+    }
+  </div>
+
+
+  <div style="
+    padding:16px;
+    background:#f6f8fa;
+    border-radius:10px;
+  ">
+    <div style="
+      font-size:12px;
+      color:#66757f;
+      margin-bottom:5px;
+    ">
+      ${last.year} Organic Distribution
+    </div>
+
+    <div style="
+      font-size:20px;
+      font-weight:700;
+      color:#263238;
+    ">
+      ${formatNumber(
+        last.organic_distribution_pct,
+        1
+      )}%
+    </div>
+
+    ${
+      comparisonLast
+        ? `
+          <div style="
+            font-size:11px;
+            color:#66757f;
+            margin-top:5px;
+          ">
+            Shared model assumption
+          </div>
+        `
+        : ""
+    }
+  </div>
+
+
+  <div style="
+    padding:16px;
+    background:#f6f8fa;
+    border-radius:10px;
+  ">
+    <div style="
+      font-size:12px;
+      color:#66757f;
+      margin-bottom:8px;
+    ">
+      ${last.year} Organic Traffic in DA Band / Day
+    </div>
+
+    ${
+      comparisonLast
+        ? `
+          <div style="
+            display:flex;
+            justify-content:space-between;
+            gap:10px;
+            margin-bottom:6px;
+          ">
+            <span style="color:#0096c7;">
+              ${modelData.da_band}
+            </span>
+            <strong>
+              ${formatCompact(
+                last.organic_traffic_in_da_band_per_day
+              )}
+            </strong>
+          </div>
+
+          <div style="
+            display:flex;
+            justify-content:space-between;
+            gap:10px;
+          ">
+            <span style="color:#66757f;">
+              ${comparisonData.da_band}
+            </span>
+            <strong>
+              ${formatCompact(
+                comparisonLast.organic_traffic_in_da_band_per_day
+              )}
+            </strong>
+          </div>
+        `
+        : `
+          <div style="
+            font-size:20px;
+            font-weight:700;
+            color:#263238;
+          ">
+            ${formatCompact(
+              last.organic_traffic_in_da_band_per_day
+            )}
+          </div>
+        `
+    }
+  </div>
+
+</div>
   `;
 
   console.log(
