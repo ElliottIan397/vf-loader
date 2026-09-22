@@ -385,11 +385,21 @@
   const plotHeight =
     chartHeight - padding.top - padding.bottom;
 
-  const values = series.map(
-    item => Number(item.visits_per_site_per_day)
-  );
-
-  const maxValue = Math.max(...values);
+   const values = series.map(
+     item => Number(item.visits_per_site_per_day)
+   );
+   
+   const comparisonSeries =
+     comparisonData?.stage2?.series || [];
+   
+   const comparisonValues = comparisonSeries.map(
+     item => Number(item.visits_per_site_per_day)
+   );
+   
+   const maxValue = Math.max(
+     ...values,
+     ...comparisonValues
+   );
 
   // Give the top of the chart a little breathing room.
   const yMax = maxValue * 1.1;
@@ -491,6 +501,44 @@
       `;
     })
     .join("");
+
+   const comparisonPoints = comparisonSeries.length
+     ? comparisonSeries
+         .map((item, index) => {
+           return `${xForIndex(index)},${yForValue(
+             item.visits_per_site_per_day
+           )}`;
+         })
+         .join(" ")
+     : "";
+   
+   const comparisonDataPoints = comparisonSeries.length
+     ? comparisonSeries
+         .map((item, index) => {
+           const x = xForIndex(index);
+           const y = yForValue(
+             item.visits_per_site_per_day
+           );
+   
+           return `
+             <circle
+               cx="${x}"
+               cy="${y}"
+               r="3.5"
+               fill="#66757f"
+             >
+               <title>
+                 DA ${comparisonData.domain_authority} —
+                 ${item.year}: ${formatNumber(
+                   item.visits_per_site_per_day,
+                   2
+                 )} visits/site/day
+               </title>
+             </circle>
+           `;
+         })
+         .join("")
+     : "";      
 
   content.innerHTML = `
 
@@ -596,6 +644,56 @@
 
     </div>
 
+   ${
+     comparisonData
+       ? `
+         <div style="
+           display:flex;
+           flex-wrap:wrap;
+           gap:18px;
+           margin-bottom:18px;
+           font-size:13px;
+           color:#66757f;
+         ">
+   
+           <div style="
+             display:flex;
+             align-items:center;
+             gap:7px;
+           ">
+             <span style="
+               width:22px;
+               height:4px;
+               background:#0096c7;
+               border-radius:2px;
+               display:inline-block;
+             "></span>
+   
+             DA ${modelData.domain_authority}
+             · Band ${modelData.da_band}
+           </div>
+   
+           <div style="
+             display:flex;
+             align-items:center;
+             gap:7px;
+           ">
+             <span style="
+               width:22px;
+               height:4px;
+               background:#66757f;
+               border-radius:2px;
+               display:inline-block;
+             "></span>
+   
+             DA ${comparisonData.domain_authority}
+             · Band ${comparisonData.da_band}
+           </div>
+   
+         </div>
+       `
+       : ""
+   }
 
     <div style="
       margin-bottom:10px;
@@ -626,18 +724,35 @@
 
         ${gridLines}
 
-        <polyline
-          points="${points}"
-          fill="none"
-          stroke="#0096c7"
-          stroke-width="4"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        />
-
-        ${dataPoints}
-
-        ${xLabels}
+      <polyline
+        points="${points}"
+        fill="none"
+        stroke="#0096c7"
+        stroke-width="4"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      
+      ${dataPoints}
+      
+      ${
+        comparisonPoints
+          ? `
+            <polyline
+              points="${comparisonPoints}"
+              fill="none"
+              stroke="#66757f"
+              stroke-width="4"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+      
+            ${comparisonDataPoints}
+          `
+          : ""
+      }
+      
+      ${xLabels}
 
       </svg>
 
