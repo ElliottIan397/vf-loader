@@ -13,6 +13,23 @@
    const formatCompact = (value) => {
     const n = Number(value);
 
+   function scrollToGoogleSearchStage2() {
+     const stage2 = document.getElementById(
+       "digitol-google-search-stage2"
+     );
+   
+     if (!stage2) return;
+   
+     stage2.style.scrollMarginTop = "90px";
+   
+     setTimeout(() => {
+       stage2.scrollIntoView({
+         behavior: "smooth",
+         block: "start"
+       });
+     }, 150);
+   }    
+
     if (n >= 1000000000) {
       return `${(n / 1000000000).toFixed(2)}B`;
     }
@@ -47,6 +64,10 @@
         data.mode === "compare"
           ? "compare"
           : "replace";
+
+     const shouldAutoScroll =
+        data.mode === "replace" ||
+        data.mode === "compare";
 
     if (
       !Number.isFinite(domainAuthority) ||
@@ -108,11 +129,15 @@
       }
       
       renderGoogleSearchStage1(primaryModelData);
-      renderGoogleSearchStage1(primaryModelData);
+      
       renderGoogleSearchStage2(
         primaryModelData,
         comparisonModelData
       );
+      
+      if (shouldAutoScroll) {
+        scrollToGoogleSearchStage2();
+      }
 
     } catch (err) {
       console.error(
@@ -310,61 +335,61 @@
           Legacy Google Search - 2014
         </div>
 
-        <div style="
-          font-size:15px;
-          color:#263238;
-          margin-bottom:24px;
-        ">
-          Search → Results → Website → Answer
-        </div>
-
-        <div style="
-          display:grid;
-          grid-template-columns:1fr 1fr;
-          gap:20px;
-        ">
-          <div>
-            <div style="
-              font-size:12px;
-              color:#66757f;
-              margin-bottom:5px;
-            ">
-              Modeled Search Cycle
-            </div>
-
-            <div style="
-              font-size:28px;
-              font-weight:700;
-              color:#263238;
-            ">
-              ${minutes(
-                time.legacy_minutes_per_search
-              )} min
-            </div>
+      <div style="
+        font-size:16px;
+        color:#263238;
+        margin-bottom:24px;
+        text-align:center;
+      ">
+        Search → Results → Website → Answer
+      </div>
+      
+      <div style="
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:20px;
+        text-align:center;
+      ">
+      
+        <div>
+          <div style="
+            font-size:13px;
+            color:#66757f;
+            margin-bottom:6px;
+          ">
+            Modeled Search Cycle
           </div>
-
-          <div>
-            <div style="
-              font-size:12px;
-              color:#66757f;
-              margin-bottom:5px;
-            ">
-              No-Click Rate
-            </div>
-
-            <div style="
-              font-size:28px;
-              font-weight:700;
-              color:#263238;
-            ">
-              ${percent(
-                traffic.legacy_no_click_rate
-              )}
-            </div>
+      
+          <div style="
+            font-size:30px;
+            font-weight:700;
+            color:#263238;
+          ">
+            ${minutes(time.legacy_minutes_per_search)} min
           </div>
         </div>
+      
+        <div>
+          <div style="
+            font-size:13px;
+            color:#66757f;
+            margin-bottom:6px;
+          ">
+            No-Click Rate
+          </div>
+      
+          <div style="
+            font-size:30px;
+            font-weight:700;
+            color:#263238;
+          ">
+            ${percent(traffic.legacy_no_click_rate)}
+          </div>
+        </div>
+      
       </div>
 
+      </div>
 
       <div style="
         display:flex;
@@ -398,6 +423,7 @@
           font-size:15px;
           color:#263238;
           margin-bottom:24px;
+          text-align:center;
         ">
           Ask → Answer → Refine
         </div>
@@ -406,6 +432,7 @@
           display:grid;
           grid-template-columns:1fr 1fr;
           gap:20px;
+          text-align:center;
         ">
           <div>
             <div style="
