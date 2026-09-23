@@ -11,39 +11,39 @@
      let comparisonModelData = null;
 
    const formatCompact = (value) => {
-    const n = Number(value);
+     const n = Number(value);
+
+     if (n >= 1000000000) {
+       return `${(n / 1000000000).toFixed(2)}B`;
+     }
+
+     if (n >= 1000000) {
+       return `${(n / 1000000).toFixed(1)}M`;
+     }
+
+     if (n >= 1000) {
+       return `${(n / 1000).toFixed(1)}K`;
+     }
+
+     return n.toFixed(0);
+   };
 
    function scrollToGoogleSearchStage2() {
      const stage2 = document.getElementById(
        "digitol-google-search-stage2"
      );
-   
+
      if (!stage2) return;
-   
+
      stage2.style.scrollMarginTop = "90px";
-   
+
      setTimeout(() => {
        stage2.scrollIntoView({
          behavior: "smooth",
          block: "start"
        });
      }, 150);
-   }    
-
-    if (n >= 1000000000) {
-      return `${(n / 1000000000).toFixed(2)}B`;
-    }
-
-    if (n >= 1000000) {
-      return `${(n / 1000000).toFixed(1)}M`;
-    }
-
-    if (n >= 1000) {
-      return `${(n / 1000).toFixed(1)}K`;
-    }
-
-    return n.toFixed(0);
-  };  
+   }  
 
   async function updateGoogleSearchModel(data) {
     const model = document.getElementById("digitol-model");
@@ -504,7 +504,7 @@
     align-items:center;
   ">
 
-    <div>
+      <div style="text-align:center;">
       <div style="
         font-size:13px;
         font-weight:600;
@@ -565,7 +565,7 @@
     </div>
 
 
-    <div>
+      <div style="text-align:center;">
       <div style="
         font-size:13px;
         font-weight:600;
