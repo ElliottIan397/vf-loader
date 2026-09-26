@@ -299,6 +299,53 @@ window.vfExtensions.push({
   },
 });
 
+/* ---------- NAVIGATE EFFECT ---------- */
+window.vfExtensions.push({
+  name: "NAVIGATE",
+  type: "effect",
+
+  match: ({ trace }) =>
+    trace?.type === "NAVIGATE" ||
+    trace?.payload?.name === "NAVIGATE",
+
+  effect: async ({ trace }) => {
+    console.log("🧭 NAVIGATE received:", trace);
+
+    const destination =
+      trace?.payload?.destination ||
+      trace?.payload?.payload?.destination ||
+      "";
+
+    // Approved internal destinations only.
+    const approvedDestinations = {
+      google_search_model:
+        "https://www.digitolservices.com/google-search-vs-ai-answer"
+    };
+
+    const target = approvedDestinations[destination];
+
+    if (!target) {
+      console.warn(
+        "🧭 Navigation blocked — unknown destination:",
+        destination
+      );
+      return;
+    }
+
+    // Do nothing if visitor is already on the destination page.
+    const currentUrl =
+      window.location.origin + window.location.pathname;
+
+    if (currentUrl === target) {
+      console.log("🧭 Already on requested page:", target);
+      return;
+    }
+
+    console.log("🧭 Navigating to:", target);
+
+    window.location.href = target;
+  },
+});
 
 /* ---------- DEAD CODE NOT REQUIRED ---------- */
 /*function forceLogoutOnNewChat() {
