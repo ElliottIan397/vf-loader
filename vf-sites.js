@@ -149,20 +149,7 @@ window.VF_SITES = {
     inputPlaceholder:
       "Ask me anything about our services, solutions, or technology...",
 
-    prompts: [
-      {
-        label: "Ecommerce",
-        query: "Tell me about your ecommerce solutions"
-      },
-      {
-        label: "Website Services",
-        query: "Tell me about your website services"
-      },
-      {
-        label: "Search & Discovery",
-        query: "Tell me about your search and discovery services"
-      }
-    ]
+    prompts: [ ]
   }
 
 };
