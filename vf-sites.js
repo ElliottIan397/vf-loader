@@ -132,7 +132,7 @@ window.VF_SITES = {
   // Digitol Services
   // ---------------------------------------------------
   "digitolservices.com": {
-    projectID: "68ccd960dc5309b2913e0dc4",
+    projectID: "6ab6aa15edc161c69d9f0ffb",
 
     agentName: "Alex",
 
