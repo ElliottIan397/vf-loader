@@ -1012,22 +1012,12 @@ function createVFRestingShell() {
     shell.style.display = "none";
     vfHost.style.display = "block";
 
-window.__vfModalActivated = true;
-activateVFModal();
-
-// V4 Digitol: launch the Agent so its native welcome
-// message and channel-selection buttons are displayed.
-if (VF_SITE_CONFIG.environmentID === "main") {
-  const api = window.voiceflow?.chat;
-
-  if (api && typeof api.interact === "function") {
-    api.interact({ type: "launch" });
-  }
-}
-
-// If the visitor entered a question in the resting shell,
-// hand it directly to Voiceflow after Command Center opens.
-if (cleanQuery) {
+      window.__vfModalActivated = true;
+      activateVFModal();
+      
+      // If the visitor entered a question in the resting shell,
+      // hand it directly to Voiceflow after Command Center opens.
+      if (cleanQuery) {
       setTimeout(() => {
         const api = window.voiceflow?.chat;
 
@@ -1688,14 +1678,17 @@ document.addEventListener(
   script.onload = function () {
     console.log("📦 VF WIDGET LOADED");
 
-    // Build compact resting shell on embedded home page
-    createVFRestingShell();
+   // Build legacy compact resting shell only for V3 sites.
+   // Digitol V4 uses the native embedded Voiceflow Agent.
+   if (!VF_SITE_CONFIG.environmentID) {
+     createVFRestingShell();
+   }
 
     const loadConfig = {
       verify: { projectID: VF_SITE_CONFIG.projectID },
       url: "https://general-runtime.voiceflow.com",
       versionID: VF_SITE_CONFIG.environmentID || "production",
-      autostart: !isHomePage,
+      autostart: VF_SITE_CONFIG.environmentID ? true : !isHomePage,
       assistant: {
         persistence: "localStorage",
         stylesheet:
@@ -1717,9 +1710,9 @@ document.addEventListener(
       armWhenVFReady();
       interceptStartNewChat();
 
-      // Home page starts with custom resting shell,
-      // not the native Voiceflow interface.
-      if (isHomePage) {
+      // V3 home pages start with the legacy custom resting shell.
+      // Digitol V4 keeps the native embedded Voiceflow Agent visible.
+      if (isHomePage && !VF_SITE_CONFIG.environmentID) {
         const vfHost = document.getElementById(VF_HOME_TARGET_ID);
         if (vfHost) {
           vfHost.style.display = "none";
