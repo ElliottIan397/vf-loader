@@ -347,6 +347,63 @@ window.vfExtensions.push({
   },
 });
 
+/* ---------- MARKET INTELLIGENCE REPORT NAVIGATE EFFECT ---------- */
+window.vfExtensions.push({
+  name: "NAVIGATE_MIR",
+  type: "effect",
+
+  match: ({ trace }) =>
+    trace?.type === "NAVIGATE_MIR" ||
+    trace?.payload?.name === "NAVIGATE_MIR",
+
+  effect: async ({ trace }) => {
+    console.log("🗺️ NAVIGATE_MIR received:", trace);
+
+    const target =
+      trace?.payload?.url ||
+      trace?.payload?.payload?.url ||
+      "";
+
+    if (!target) {
+      console.warn("🗺️ MIR navigation blocked — no URL received.");
+      return;
+    }
+
+    // Only allow secure Digitol Services destinations.
+    const approvedPrefixes = [
+      "https://www.digitolservices.com/",
+      "https://digitolservices.com/"
+    ];
+
+    const isApproved = approvedPrefixes.some(prefix =>
+      target.toLowerCase().startsWith(prefix)
+    );
+
+    if (!isApproved) {
+      console.warn(
+        "🗺️ MIR navigation blocked — unapproved URL:",
+        target
+      );
+      return;
+    }
+
+    // Do nothing if visitor is already on the destination page.
+    const currentUrl =
+      window.location.origin + window.location.pathname;
+
+    const targetWithoutQuery = target.split("?")[0].split("#")[0];
+
+    if (currentUrl === targetWithoutQuery) {
+      console.log("🗺️ Already on requested MIR page:", target);
+      return;
+    }
+
+    console.log("🗺️ Navigating to MIR:", target);
+
+    window.location.href = target;
+  },
+});
+
 /* ---------- DEAD CODE NOT REQUIRED ---------- */
 /*function forceLogoutOnNewChat() {
   if (!window.voiceflow?.chat) return;
