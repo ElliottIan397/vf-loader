@@ -133,7 +133,7 @@ window.VF_SITES = {
   // ---------------------------------------------------
   "digitolservices.com": {
     projectID: "6ab6aa15edc161c69d9f0ffb",
-
+      environmentID: "main",
     agentName: "Alex",
 
     avatarUrl:
