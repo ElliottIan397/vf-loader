@@ -1012,12 +1012,22 @@ function createVFRestingShell() {
     shell.style.display = "none";
     vfHost.style.display = "block";
 
-    window.__vfModalActivated = true;
-    activateVFModal();
+window.__vfModalActivated = true;
+activateVFModal();
 
-    // If the visitor entered a question in the resting shell,
-    // hand it directly to Voiceflow after Command Center opens.
-    if (cleanQuery) {
+// V4 Digitol: launch the Agent so its native welcome
+// message and channel-selection buttons are displayed.
+if (VF_SITE_CONFIG.environmentID === "main") {
+  const api = window.voiceflow?.chat;
+
+  if (api && typeof api.interact === "function") {
+    api.interact({ type: "launch" });
+  }
+}
+
+// If the visitor entered a question in the resting shell,
+// hand it directly to Voiceflow after Command Center opens.
+if (cleanQuery) {
       setTimeout(() => {
         const api = window.voiceflow?.chat;
 
