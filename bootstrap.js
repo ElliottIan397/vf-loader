@@ -1684,7 +1684,7 @@ document.addEventListener(
     const loadConfig = {
       verify: { projectID: VF_SITE_CONFIG.projectID },
       url: "https://general-runtime.voiceflow.com",
-      versionID: "production",
+      versionID: VF_SITE_CONFIG.environmentID || "production",
       autostart: !isHomePage,
       assistant: {
         persistence: "localStorage",
